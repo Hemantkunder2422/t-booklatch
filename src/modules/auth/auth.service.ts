@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -63,4 +63,22 @@ export class AuthService {
       },
     };
   }
+
+  async currentUser(accessToken:string){
+    if(!accessToken) throw new NotFoundException("Access token not found");
+    const decodedUser = await this.jwtService.decode(accessToken);
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: decodedUser['sub'],
+      },
+      
+    });
+    if(!user) throw new NotFoundException("User not found");
+    return {
+      name:user.name,
+      id:user.id,
+      email:user.email
+    }
+  }
+  
 }
