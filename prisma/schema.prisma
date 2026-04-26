@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserType {
+  VENDOR
+  VENUE
+  ADMIN
+}
+
+enum Role {
+  VENDOR_ADMIN
+  VENDOR_STAFF
+  VENUE_ADMIN
+  VENUE_STAFF
+  SUPER_ADMIN
+  ADMIN
+  SUPPORT
+}
+
+enum VendorType {
+  FOOD
+  DECOR
+  PHOTOGRAPHY
+  MUSIC
+}
+
+model User {
+  id       String   @id @default(uuid())
+  name     String
+  email    String   @unique
+  password String
+  userType UserType
+  role     Role
+
+  venueId  String?
+  vendorId String?
+
+  venue  Venue?  @relation("VenueUsers", fields: [venueId], references: [id])
+  vendor Vendor? @relation("VendorUsers", fields: [vendorId], references: [id])
+
+  isActive   Boolean @default(true)
+  isVerified Boolean @default(false)
+
+  createdById    String?
+  createdBy      User?   @relation("UserCreatedBy", fields: [createdById], references: [id])
+  createdByUsers User[]  @relation("UserCreatedBy")
+
+  lastLoginAt DateTime?
+  deletedAt   DateTime?
+
+  metaData Json?
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  createdVenues  Venue[]        @relation("VenueCreatedBy")
+  createdVendors Vendor[]       @relation("VendorCreatedBy")
+  venues         Venue[]
+  vendors        Vendor[]
+  invites        Invite[]
+  refreshTokens  RefreshToken[]
+
+  @@index([email])
+  @@index([role])
+  @@index([userType])
+  @@index([venueId])
+  @@index([vendorId])
+}
+
+model Invite {
+  id       String   @id @default(uuid())
+  email    String
+  role     Role
+  userType UserType
+
+  invitedById String
+  invitedBy   User   @relation(fields: [invitedById], references: [id])
+
+  token     String   @unique
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Venue {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  address     String?
+  city        String?
+  state       String?
+  country     String?
+  pincode     String?
+  phone       String?
+  email       String?
+  website     String?
+  capacity    Int?
+  priceRange  String?
+  createdById String
+  createdBy   User    @relation("VenueCreatedBy", fields: [createdById], references: [id])
+  users       User[]  @relation("VenueUsers")
+
+  isActive   Boolean @default(true)
+  isVerified Boolean @default(false)
+
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+
+  @@index([city])
+  @@index([name])
+  @@index([createdById])
+}
+
+model Vendor {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+
+  type    VendorType
+  phone   String?
+  emai    String?
+  website String?
+
+  city    String?
+  state   String?
+  country String?
+
+  createdById String
+  createdBy   User   @relation("VendorCreatedBy", fields: [createdById], references: [id])
+  users       User[] @relation("VendorUsers")
+
+  isActive   Boolean @default(true)
+  isVerified Boolean @default(false)
+
+  metaData  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+
+  @@index([type])
+  @@index([city])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  userAgent String?
+  ipAddress String?
+  isRevoked Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
