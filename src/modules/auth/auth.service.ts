@@ -100,4 +100,5 @@ export class AuthService {
     const users = await this.prisma.user.findMany({});
     return users;
   }
+  //this is a comment
 }
