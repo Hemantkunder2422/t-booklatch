@@ -6,6 +6,8 @@ import { UserModule } from './modules/user/user.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { InvitesModule } from './modules/invites/invites.module';
+import { VenueModule } from './modules/venue/venue.module';
+import { VendorModule } from './modules/vendor/vendor.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { InvitesModule } from './modules/invites/invites.module';
     UserModule,
     PrismaModule,
     InvitesModule,
+    VenueModule,
+    VendorModule,
   ],
   controllers: [AppController],
   providers: [AppService],

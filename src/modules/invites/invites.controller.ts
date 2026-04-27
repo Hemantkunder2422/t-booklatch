@@ -32,9 +32,9 @@ export class InvitesController {
   }
 
   @Post('user')
-  @Roles(Role.ADMIN)
+  @Roles(Role.VENUE_ADMIN, Role.VENDOR_ADMIN)
   async inviteUser(@Body() dto: InviteDto) {
-    return 'invite users ';
+    return 'invite users';
   }
 
   @Post('accept')
