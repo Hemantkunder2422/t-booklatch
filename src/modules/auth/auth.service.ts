@@ -1,9 +1,15 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, randomBytes } from 'crypto';
+import type { AuthUser } from 'src/types/auth-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -52,7 +58,7 @@ export class AuthService {
 
     return {
       message: 'Login successful',
-      refreshToken: tokenHash,
+      refreshToken: refreshToken,
       accessToken,
       user: {
         id: user.id,
@@ -64,21 +70,34 @@ export class AuthService {
     };
   }
 
-  async currentUser(accessToken:string){
-    if(!accessToken) throw new NotFoundException("Access token not found");
-    const decodedUser = await this.jwtService.decode(accessToken);
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: decodedUser['sub'],
-      },
-      
-    });
-    if(!user) throw new NotFoundException("User not found");
-    return {
-      name:user.name,
-      id:user.id,
-      email:user.email
-    }
+  async logout(refreshToken: string) {
+    if (!refreshToken)
+      throw new UnauthorizedException('Invalid or missing token');
+
+    const hashToken = createHash('sha256').update(refreshToken).digest('hex');
+    console.log(hashToken);
+    await this.prisma.refreshToken.deleteMany({ where: { token: hashToken } });
   }
-  
+
+  async refresh(refreshToken: string) {}
+
+  async currentUser(user: AuthUser) {
+    if (!user) throw new NotFoundException('User not found');
+
+    return await this.prisma.user.findUnique({
+      where: { id: user.userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        userType: true,
+      },
+    });
+  }
+
+  async allUsers() {
+    const users = await this.prisma.user.findMany({});
+    return users;
+  }
 }

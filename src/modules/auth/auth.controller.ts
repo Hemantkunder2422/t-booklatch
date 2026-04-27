@@ -1,7 +1,21 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import type { Request, Response } from 'express';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { RolesGuard } from './roles.guard';
+import { Roles } from './roles.decorator';
+import { Role } from '@prisma/client';
+import { CurrentUser } from '../user/current-user.decorator';
+import type { AuthUser } from 'src/types/auth-user.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -33,15 +47,24 @@ export class AuthController {
   }
 
   @Post('signout')
-  logout(@Res() res: Response) {
+  async logout(@Req() req: Request, @Res() res: Response) {
+    const refreshToken = req.cookies?.refreshToken;
+    await this.authService.logout(refreshToken);
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
-    return res.json({ message: 'Logout successful' });
+    return res.json({ message: 'Signed out from all devices' });
   }
 
   @Post('me')
-  async me(@Req() req: Request) {
-    const request = req.cookies.accessToken
-    return await this.authService.currentUser(request);
+  @UseGuards(JwtAuthGuard)
+  async me(@Req() req: Request, @CurrentUser() user: AuthUser) {
+    return await this.authService.currentUser(user);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SUPER_ADMIN)
+  @Get('all-users')
+  async getAllUsers() {
+    return this.authService.allUsers();
   }
 }
