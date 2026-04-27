@@ -4,9 +4,12 @@ export class AcceptInviteDto {
   @IsString()
   token!: string;
 
-  @IsEmail()
-  email!: string;
+  @IsString()
+  name!: string;
 
   @IsString()
   password!: string;
+
+  @IsString()
+  repassword!: string;
 }

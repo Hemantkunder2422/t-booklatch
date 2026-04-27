@@ -23,8 +23,8 @@ export class UserController {
   @Post('add')
   @HttpCode(HttpStatus.CREATED)
   @Roles(Role.SUPER_ADMIN, Role.VENDOR_ADMIN, Role.VENDOR_ADMIN)
-  async create(@Body() dto: CreateUserDto, @CurrentUser() user: AuthUser) {
-    const result = await this.userService.createUser(dto, user);
+  async create(@Body() dto: CreateUserDto) {
+    const result = await this.userService.createUser(dto);
     return result;
   }
 }

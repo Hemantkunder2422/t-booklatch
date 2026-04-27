@@ -79,7 +79,58 @@ export class AuthService {
     await this.prisma.refreshToken.deleteMany({ where: { token: hashToken } });
   }
 
-  async refresh(refreshToken: string) {}
+  async refresh(refreshToken: string) {
+    if (!refreshToken) throw new UnauthorizedException('Refresh token missing');
+
+    const hashToken = createHash('sha256').update(refreshToken).digest('hex');
+
+    const storedToken = await this.prisma.refreshToken.findFirst({
+      where: {
+        token: hashToken,
+        isRevoked: false,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!storedToken) throw new UnauthorizedException('Invalid refresh token');
+    if (storedToken.expiresAt < new Date(Date.now())) {
+      throw new UnauthorizedException('Refresh token expired');
+    }
+    const user = storedToken.user;
+    const tokenPayload = {
+      sub: user.id,
+      role: user.role,
+      venueId: user.venueId,
+      vendorId: user.vendorId,
+      type: user.userType,
+    };
+    const newAccessToken = this.jwtService.sign(tokenPayload, {
+      expiresIn: '15m',
+    });
+
+    const newRefreshToken = randomBytes(32).toString('hex');
+    const newTokenHash = createHash('sha256')
+      .update(newRefreshToken)
+      .digest('hex');
+
+    await this.prisma.refreshToken.delete({
+      where: {
+        id: storedToken.id,
+      },
+    });
+
+    await this.prisma.refreshToken.create({
+      data: {
+        token: newTokenHash,
+        userId: user.id,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    return { newAccessToken, newRefreshToken };
+  }
 
   async currentUser(user: AuthUser) {
     if (!user) throw new NotFoundException('User not found');
@@ -100,5 +151,4 @@ export class AuthService {
     const users = await this.prisma.user.findMany({});
     return users;
   }
-  //this is a comment
 }

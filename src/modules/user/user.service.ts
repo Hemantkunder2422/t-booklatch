@@ -12,8 +12,7 @@ import { AuthUser } from 'src/types/auth-user.interface';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async createUser(createUserDto: CreateUserDto, currentuser: AuthUser) {
-    console.log(currentuser);
+  async createUser(createUserDto: CreateUserDto) {
     const existingUser = await this.prisma.user.findUnique({
       where: {
         email: createUserDto.email,

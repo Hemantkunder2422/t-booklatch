@@ -85,6 +85,8 @@ model Invite {
   invitedById String
   invitedBy   User   @relation(fields: [invitedById], references: [id])
 
+  venueId   String?
+  vendorId  String?
   token     String   @unique
   expiresAt DateTime
   isUsed    Boolean  @default(false)
