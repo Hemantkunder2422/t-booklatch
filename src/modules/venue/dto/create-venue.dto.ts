@@ -4,47 +4,47 @@ export class CreateVenueDto {
   @IsString()
   name!: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   description!: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   address!: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   city!: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   state!: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   country!: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   pincode!: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   phone!: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   email!: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   website!: string;
 
-  @IsNumber()
   @IsOptional()
+  @IsNumber()
   capacity!: number;
 
-  @IsNumber()
   @IsOptional()
+  @IsString()
   priceRange!: string;
 }

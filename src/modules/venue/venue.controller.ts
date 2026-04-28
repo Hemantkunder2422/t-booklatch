@@ -5,6 +5,8 @@ import { RolesGuard } from '../auth/roles.guard';
 import { CreateVenueDto } from './dto/create-venue.dto';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '@prisma/client';
+import { CurrentUser } from '../user/current-user.decorator';
+import type { AuthUser } from 'src/types/auth-user.interface';
 
 @Controller('venue')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -13,7 +15,7 @@ export class VenueController {
 
   @Post('add-venue')
   @Roles(Role.VENUE_ADMIN)
-  async register(@Body() dto: CreateVenueDto) {
-    return this.venueService.createVenue(dto);
+  async register(@Body() dto: CreateVenueDto, @CurrentUser() user: AuthUser) {
+    return this.venueService.createVenue(dto, user);
   }
 }
