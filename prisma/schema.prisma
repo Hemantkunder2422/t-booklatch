@@ -48,7 +48,7 @@ model User {
   venue  Venue?  @relation("VenueUsers", fields: [venueId], references: [id])
   vendor Vendor? @relation("VendorUsers", fields: [vendorId], references: [id])
 
-  ownedVenue Venue?  @relation("VenueOwner")
+  ownedVenue Venue[] @relation("VenueOwner")
   isActive   Boolean @default(true)
   isVerified Boolean @default(false)
 
@@ -112,7 +112,7 @@ model Venue {
   createdBy   User    @relation("VenueCreatedBy", fields: [createdById], references: [id])
   users       User[]  @relation("VenueUsers")
 
-  ownerId String @unique
+  ownerId String
   owner   User   @relation("VenueOwner", fields: [ownerId], references: [id])
 
   isActive   Boolean @default(true)

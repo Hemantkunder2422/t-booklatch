@@ -8,7 +8,7 @@ export class VenueService {
   constructor(private prisma: PrismaService) {}
 
   async createVenue(dto: CreateVenueDto, user: AuthUser) {
-    const creationTransaction = await this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx) => {
       const venue = await tx.venue.create({
         data: {
           ...dto,
@@ -20,9 +20,11 @@ export class VenueService {
       await tx.user.update({
         where: { id: user.userId },
         data: {
-          ven,
+          venueId: venue.id,
         },
       });
+
+      return venue;
     });
   }
 }

@@ -17,7 +17,7 @@ import * as bcrypt from 'bcrypt';
 export class InvitesService {
   constructor(private prisma: PrismaService) {}
 
-  async getInvite(dto: InviteDto, user: AuthUser) {
+  async sendInvite(dto: InviteDto, user: AuthUser) {
     const existingInvite = await this.prisma.invite.findFirst({
       where: {
         email: dto.email,
@@ -117,5 +117,9 @@ export class InvitesService {
     });
 
     return { message: 'Invite accepted successfully' };
+  }
+
+  async userInvite(dto: InviteDto) {
+    return 'Invite users';
   }
 }

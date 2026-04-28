@@ -16,10 +16,11 @@ import { AcceptInviteDto } from './dto/accept-invite.dto';
 export class InvitesController {
   constructor(private invite: InvitesService) {}
 
+  //route with role guard to make sure only super admin can send invites
   @Post('send')
   @Roles(Role.SUPER_ADMIN)
   async sendInvite(@Body() dto: InviteDto, @CurrentUser() user: AuthUser) {
-    return this.invite.getInvite(dto, user);
+    return this.invite.sendInvite(dto, user);
   }
 
   @Post('resend')
@@ -34,7 +35,7 @@ export class InvitesController {
   @Post('user')
   @Roles(Role.VENUE_ADMIN, Role.VENDOR_ADMIN)
   async inviteUser(@Body() dto: InviteDto) {
-    return 'invite users';
+    return this.invite.userInvite(dto);
   }
 
   @Post('accept')
