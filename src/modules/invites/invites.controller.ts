@@ -10,6 +10,7 @@ import { Role } from '@prisma/client';
 import { RolesGuard } from '../auth/roles.guard';
 import { ResendInviteDto } from './dto/resend-invite.dto';
 import { AcceptInviteDto } from './dto/accept-invite.dto';
+import { userInfo } from 'node:os';
 
 @Controller('invite')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -34,8 +35,8 @@ export class InvitesController {
 
   @Post('user')
   @Roles(Role.VENUE_ADMIN, Role.VENDOR_ADMIN)
-  async inviteUser(@Body() dto: InviteDto) {
-    return this.invite.userInvite(dto);
+  async inviteUser(@Body() dto: InviteDto , @CurrentUser() user:AuthUser) {
+    return this.invite.userInvite(dto,user);
   }
 
   @Post('accept')
