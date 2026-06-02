@@ -75,7 +75,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or missing token');
 
     const hashToken = createHash('sha256').update(refreshToken).digest('hex');
-    console.log(hashToken);
     await this.prisma.refreshToken.deleteMany({ where: { token: hashToken } });
   }
 

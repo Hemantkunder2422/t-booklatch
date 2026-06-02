@@ -12,6 +12,7 @@ import { createHash, randomBytes } from 'crypto';
 import { ResendInviteDto } from './dto/resend-invite.dto';
 import { AcceptInviteDto } from './dto/accept-invite.dto';
 import * as bcrypt from 'bcrypt';
+import { UserInviteDto } from './dto/user-invite.dto';
 
 @Injectable()
 export class InvitesService {
@@ -43,7 +44,6 @@ export class InvitesService {
   }
 
   async resendInvite(dto: ResendInviteDto, user: AuthUser) {
-    console.log(dto);
     const existingInvite = await this.prisma.invite.findFirst({
       where: {
         email: dto.email,
@@ -119,7 +119,12 @@ export class InvitesService {
     return { message: 'Invite accepted successfully' };
   }
 
-  async userInvite(dto: InviteDto, user:AuthUser) {
+  async userInvite(dto: UserInviteDto, user:AuthUser) {
+    console.log(user)
+    const roleMap: Record<string, Role> = {
+  VENDOR: Role.VENDOR_STAFF,
+  VENUE: Role.VENUE_STAFF,
+};
     const existingInvite = await this.prisma.invite.findFirst({
       where:{
         email:dto.email
@@ -132,7 +137,9 @@ export class InvitesService {
 
     await this.prisma.invite.create({
       data:{
-        ...dto,
+        email:dto.email,
+        role: roleMap[user.userType],
+        userType:user.userType,
         token:hashToken,
         invitedById:user.userId,
         expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000)

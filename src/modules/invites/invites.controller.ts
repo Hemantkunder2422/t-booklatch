@@ -11,6 +11,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import { ResendInviteDto } from './dto/resend-invite.dto';
 import { AcceptInviteDto } from './dto/accept-invite.dto';
 import { userInfo } from 'node:os';
+import { UserInviteDto } from './dto/user-invite.dto';
 
 @Controller('invite')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -35,7 +36,7 @@ export class InvitesController {
 
   @Post('user')
   @Roles(Role.VENUE_ADMIN, Role.VENDOR_ADMIN)
-  async inviteUser(@Body() dto: InviteDto , @CurrentUser() user:AuthUser) {
+  async inviteUser(@Body() dto: UserInviteDto , @CurrentUser() user:AuthUser) {
     return this.invite.userInvite(dto,user);
   }
 
@@ -44,3 +45,4 @@ export class InvitesController {
     return this.invite.acceptInvite(dto);
   }
 }
+ 
