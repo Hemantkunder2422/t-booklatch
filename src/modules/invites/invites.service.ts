@@ -120,11 +120,7 @@ export class InvitesService {
   }
 
   async userInvite(dto: UserInviteDto, user:AuthUser) {
-    console.log(user)
-    const roleMap: Record<string, Role> = {
-  VENDOR: Role.VENDOR_STAFF,
-  VENUE: Role.VENUE_STAFF,
-};
+    console.log(user.userType)
     const existingInvite = await this.prisma.invite.findFirst({
       where:{
         email:dto.email
@@ -138,7 +134,7 @@ export class InvitesService {
     await this.prisma.invite.create({
       data:{
         email:dto.email,
-        role: roleMap[user.userType],
+        role: user.role === "VENDOR_ADMIN" ? "VENDOR_STAFF" : "VENUE_STAFF",
         userType:user.userType,
         token:hashToken,
         invitedById:user.userId,
