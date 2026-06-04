@@ -119,33 +119,30 @@ export class InvitesService {
     return { message: 'Invite accepted successfully' };
   }
 
-  async userInvite(dto: UserInviteDto, user:AuthUser) {
-    console.log(user.userType)
+  async userInvite(dto: UserInviteDto, user: AuthUser) {
     const existingInvite = await this.prisma.invite.findFirst({
-      where:{
-        email:dto.email
-      }
-    })
+      where: {
+        email: dto.email,
+      },
+    });
 
-    if(existingInvite) throw new ConflictException("Invite already sent");
+    if (existingInvite) throw new ConflictException('Invite already sent');
     const token = randomBytes(32).toString('hex');
     const hashToken = createHash('sha256').update(token).digest('hex');
 
     await this.prisma.invite.create({
-      data:{
-        email:dto.email,
-        role: user.role === "VENDOR_ADMIN" ? "VENDOR_STAFF" : "VENUE_STAFF",
-        userType:user.userType,
-        token:hashToken,
-        invitedById:user.userId,
-        expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000)
-      }
-    })
+      data: {
+        email: dto.email,
+        role: user.role === 'VENDOR_ADMIN' ? 'VENDOR_STAFF' : 'VENUE_STAFF',
+        userType: user.type,
+        token: hashToken,
+        invitedById: user.userId,
+        expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
+      },
+    });
 
     return {
-      data: `Invite sent to ${dto.email}`
-    }
+      data: `Invite sent to ${dto.email}`,
+    };
   }
-
-  
 }
