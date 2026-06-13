@@ -9,17 +9,6 @@ export class VenueService {
 
    async createVenue(dto: CreateVenueDto, user: AuthUser) {
     return this.prisma.$transaction(async (tx) => {
-      
-      // ✅ 1. Check if user already owns a venue
-      const existingVenue = await tx.venue.findUnique({
-        where: { ownerId: user.userId },
-      });
-
-      if (existingVenue) {
-        throw new ConflictException('User already owns a venue');
-      }
-
-      // ✅ 2. Create venue using relations (clean & safe)
       const venue = await tx.venue.create({
         data: {
           ...dto,
@@ -34,7 +23,6 @@ export class VenueService {
         },
       });
 
-      // ✅ 3. Update user safely
       await tx.user.update({
         where: { id: user.userId },
         data: {
@@ -45,6 +33,9 @@ export class VenueService {
       });
 
       return venue;
+    },{
+      maxWait:10000,
+      timeout:30000
     });
   }
 }
