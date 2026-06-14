@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, UseGuards } from '@nestjs/common';
 import { VenueService } from './venue.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -7,6 +7,7 @@ import { Roles } from '../auth/roles.decorator';
 import { Role } from '@prisma/client';
 import { CurrentUser } from '../user/current-user.decorator';
 import type { AuthUser } from 'src/types/auth-user.interface';
+import { AddVenueSpace } from './dto/add-venue-space.dto';
 
 @Controller('venue')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -17,5 +18,17 @@ export class VenueController {
   @Roles(Role.VENUE_ADMIN)
   async register(@Body() dto: CreateVenueDto, @CurrentUser() user: AuthUser) {
     return this.venueService.createVenue(dto, user);
+  }
+
+  @Post('add-space')
+  @Roles(Role.VENUE_ADMIN,Role.VENUE_STAFF)
+  async addSpace(@Body() dto:AddVenueSpace, @CurrentUser() user:AuthUser){
+    return this.venueService.addVenueSpace(dto,user)
+  }
+
+  @Delete('remove-space/:spaceId')
+  @Roles(Role.VENUE_ADMIN)
+  async removeSpace(@Param("spaceId") spaceId:string, @CurrentUser() user:AuthUser){
+    return this.venueService.removeSpace(spaceId,user)
   }
 }

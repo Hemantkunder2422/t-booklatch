@@ -73,11 +73,14 @@ model Venue {
   createdById String
   isActive    Boolean  @default(true)
   isVerified  Boolean  @default(false)
+  gallery String[]
   metadata    Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   ownerId     String
   users       User[]   @relation("VenueUsers")
+  venueSpaces VenueSpaces[]
+  bookings Booking[]
   createdBy   User     @relation("VenueCreatedBy", fields: [createdById], references: [id])
   owner       User     @relation("VenueOwner", fields: [ownerId], references: [id])
 
@@ -92,7 +95,7 @@ model Vendor {
   description String?
   type        VendorType
   phone       String?
-  emai        String?
+  email        String?
   website     String?
   city        String?
   state       String?
@@ -110,6 +113,60 @@ model Vendor {
 
   @@index([type])
   @@index([city])
+}
+
+model VenueSpaces {
+  id String @id @default(uuid())
+  venueId String
+  name String
+  description String
+  pax Int
+  gallery String[]
+  venue Venue @relation(fields: [venueId], references: [id])
+  calendarEntries VenueSpaceCalendar[]
+  bookings Booking[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([venueId,name])
+}
+
+model Booking {
+  id String @id @default(uuid())
+  venueId String
+  venueSpaceId String
+  customerName String
+  customerPhone String
+  customerEmail String
+  eventName String
+  eventType EventType
+  startDate DateTime
+  endDate DateTime
+  pax Int
+  notes String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  venue Venue @relation(fields: [venueId], references: [id])
+  venueSpace VenueSpaces @relation(fields: [venueSpaceId],references: [id])
+
+  @@index([venueSpaceId])
+  @@index([startDate])
+  @@index([endDate])
+}
+
+model VenueSpaceCalendar {
+  id String @id @default(uuid())
+  venueSpaceId String
+  date DateTime @db.Date
+  status CalendarStatus
+  notes String?
+  bookingId String?
+  venueSpace VenueSpaces @relation(fields: [venueSpaceId],references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([venueSpaceId,date])
+  @@index([venueSpaceId,date])
 }
 
 model RefreshToken {
@@ -147,4 +204,33 @@ enum VendorType {
   DECOR
   PHOTOGRAPHY
   MUSIC
+}
+
+enum EventType {
+  WEDDING
+  BIRTHDAY
+  OTHERS
+  RECEPTION
+  CORPORATE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  REFUNDED
+}
+
+enum CalendarStatus {
+  AVAILABLE
+  BOOKED
+  BLOCKED
+  MAINTENANCE
 }

@@ -42,7 +42,7 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(tokenPayload, {
-      expiresIn: '15m',
+      expiresIn: '45m',
     });
 
     const refreshToken = randomBytes(32).toString('hex');
@@ -66,6 +66,8 @@ export class AuthService {
         email: user.email,
         role: user.role,
         type: user.userType,
+        venueId:user.venueId,
+        vendorId:user.vendorId
       },
     };
   }
@@ -106,7 +108,7 @@ export class AuthService {
       type: user.userType,
     };
     const newAccessToken = this.jwtService.sign(tokenPayload, {
-      expiresIn: '15m',
+      expiresIn: '45m',
     });
 
     const newRefreshToken = randomBytes(32).toString('hex');
@@ -142,6 +144,8 @@ export class AuthService {
         email: true,
         role: true,
         userType: true,
+        vendorId:true,
+        venueId:true
       },
     });
   }
