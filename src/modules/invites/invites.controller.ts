@@ -10,7 +10,6 @@ import { Role } from '@prisma/client';
 import { RolesGuard } from '../auth/roles.guard';
 import { ResendInviteDto } from './dto/resend-invite.dto';
 import { AcceptInviteDto } from './dto/accept-invite.dto';
-import { userInfo } from 'node:os';
 import { UserInviteDto } from './dto/user-invite.dto';
 
 @Controller('invite')
