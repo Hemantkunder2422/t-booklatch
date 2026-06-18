@@ -120,6 +120,9 @@ model VenueSpaces {
   venueId String
   name String
   description String
+  morningSlotEnabled Boolean @default(true)
+  eveningSlotEnabled Boolean @default(true)
+  fullDaySlotEnabled Boolean @default(true)
   pax Int
   gallery String[]
   venue Venue @relation(fields: [venueId], references: [id])
@@ -140,8 +143,9 @@ model Booking {
   customerEmail String
   eventName String
   eventType EventType
-  startDate DateTime
-  endDate DateTime
+  bookingDate DateTime @db.Date
+  slot BookingSlot @default(MORNING)
+  bookingStatus BookingStatus @default(PENDING)
   pax Int
   notes String?
   createdAt DateTime @default(now())
@@ -150,14 +154,14 @@ model Booking {
   venueSpace VenueSpaces @relation(fields: [venueSpaceId],references: [id])
 
   @@index([venueSpaceId])
-  @@index([startDate])
-  @@index([endDate])
+ 
 }
 
 model VenueSpaceCalendar {
   id String @id @default(uuid())
   venueSpaceId String
   date DateTime @db.Date
+  slot BookingSlot
   status CalendarStatus
   notes String?
   bookingId String?
@@ -165,7 +169,7 @@ model VenueSpaceCalendar {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([venueSpaceId,date])
+  @@unique([venueSpaceId,date,slot])
   @@index([venueSpaceId,date])
 }
 
@@ -233,4 +237,10 @@ enum CalendarStatus {
   BOOKED
   BLOCKED
   MAINTENANCE
+}
+
+enum BookingSlot {
+  MORNING
+  EVENING
+  FULL_DAY
 }
