@@ -57,7 +57,7 @@ model Invite {
 }
 
 model Venue {
-  id          String   @id @default(uuid())
+  id          String        @id @default(uuid())
   name        String
   description String?
   address     String?
@@ -71,18 +71,18 @@ model Venue {
   capacity    Int?
   priceRange  String?
   createdById String
-  isActive    Boolean  @default(true)
-  isVerified  Boolean  @default(false)
-  gallery String[]
+  isActive    Boolean       @default(true)
+  isVerified  Boolean       @default(false)
+  gallery     String[]
   metadata    Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   ownerId     String
-  users       User[]   @relation("VenueUsers")
+  users       User[]        @relation("VenueUsers")
   venueSpaces VenueSpaces[]
-  bookings Booking[]
-  createdBy   User     @relation("VenueCreatedBy", fields: [createdById], references: [id])
-  owner       User     @relation("VenueOwner", fields: [ownerId], references: [id])
+  bookings    Booking[]
+  createdBy   User          @relation("VenueCreatedBy", fields: [createdById], references: [id])
+  owner       User          @relation("VenueOwner", fields: [ownerId], references: [id])
 
   @@index([city])
   @@index([name])
@@ -95,7 +95,7 @@ model Vendor {
   description String?
   type        VendorType
   phone       String?
-  email        String?
+  email       String?
   website     String?
   city        String?
   state       String?
@@ -116,61 +116,60 @@ model Vendor {
 }
 
 model VenueSpaces {
-  id String @id @default(uuid())
-  venueId String
-  name String
-  description String
-  morningSlotEnabled Boolean @default(true)
-  eveningSlotEnabled Boolean @default(true)
-  fullDaySlotEnabled Boolean @default(true)
-  pax Int
-  gallery String[]
-  venue Venue @relation(fields: [venueId], references: [id])
-  calendarEntries VenueSpaceCalendar[]
-  bookings Booking[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 String               @id @default(uuid())
+  venueId            String
+  name               String
+  description        String
+  morningSlotEnabled Boolean              @default(true)
+  eveningSlotEnabled Boolean              @default(true)
+  fullDaySlotEnabled Boolean              @default(true)
+  pax                Int
+  gallery            String[]
+  venue              Venue                @relation(fields: [venueId], references: [id])
+  calendarEntries    VenueSpaceCalendar[]
+  bookings           Booking[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 
-  @@index([venueId,name])
+  @@index([venueId, name])
 }
 
 model Booking {
-  id String @id @default(uuid())
-  venueId String
-  venueSpaceId String
-  customerName String
+  id            String        @id @default(uuid())
+  venueId       String
+  venueSpaceId  String
+  customerName  String
   customerPhone String
   customerEmail String
-  eventName String
-  eventType EventType
-  bookingDate DateTime @db.Date
-  slot BookingSlot @default(MORNING)
+  eventName     String
+  eventType     EventType
+  bookingDate   DateTime      @db.Date
+  slot          BookingSlot   @default(MORNING)
   bookingStatus BookingStatus @default(PENDING)
-  pax Int
-  notes String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  venue Venue @relation(fields: [venueId], references: [id])
-  venueSpace VenueSpaces @relation(fields: [venueSpaceId],references: [id])
+  pax           Int
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  venue         Venue         @relation(fields: [venueId], references: [id])
+  venueSpace    VenueSpaces   @relation(fields: [venueSpaceId], references: [id])
 
   @@index([venueSpaceId])
- 
 }
 
 model VenueSpaceCalendar {
-  id String @id @default(uuid())
+  id           String         @id @default(uuid())
   venueSpaceId String
-  date DateTime @db.Date
-  slot BookingSlot
-  status CalendarStatus
-  notes String?
-  bookingId String?
-  venueSpace VenueSpaces @relation(fields: [venueSpaceId],references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  date         DateTime       @db.Date
+  slot         BookingSlot
+  status       CalendarStatus
+  notes        String?
+  bookingId    String?
+  venueSpace   VenueSpaces    @relation(fields: [venueSpaceId], references: [id])
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
-  @@unique([venueSpaceId,date,slot])
-  @@index([venueSpaceId,date])
+  @@unique([venueSpaceId, date, slot])
+  @@index([venueSpaceId, date])
 }
 
 model RefreshToken {
@@ -223,6 +222,7 @@ enum BookingStatus {
   CONFIRMED
   CANCELLED
   COMPLETED
+  ENQUIRY
 }
 
 enum PaymentStatus {
