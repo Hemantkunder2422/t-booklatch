@@ -81,6 +81,7 @@ model Venue {
   users       User[]        @relation("VenueUsers")
   venueSpaces VenueSpaces[]
   bookings    Booking[]
+  bookingEnquiries BookingEnquiry[]
   createdBy   User          @relation("VenueCreatedBy", fields: [createdById], references: [id])
   owner       User          @relation("VenueOwner", fields: [ownerId], references: [id])
 
@@ -127,6 +128,7 @@ model VenueSpaces {
   gallery            String[]
   venue              Venue                @relation(fields: [venueId], references: [id])
   calendarEntries    VenueSpaceCalendar[]
+  bookingEnquiry BookingEnquiry[]
   bookings           Booking[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
@@ -145,7 +147,7 @@ model Booking {
   eventType     EventType
   bookingDate   DateTime      @db.Date
   slot          BookingSlot   @default(MORNING)
-  bookingStatus BookingStatus @default(ENQUIRY)
+  bookingStatus BookingStatus @default(PENDING)
   source        BookingSource @default(INTERNAL)
   pax           Int
   notes         String?
@@ -170,8 +172,42 @@ model VenueSpaceCalendar {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
-  @@unique([venueSpaceId, date, slot])
   @@index([venueSpaceId, date])
+}
+
+model BookingEnquiry {
+  id String @id @default(uuid())
+
+  venueId String
+  venueSpaceId String
+
+  customerName String
+  customerPhone String
+  customerEmail String?
+
+  eventName String?
+  eventType EventType?
+
+  bookingDate DateTime @db.Date
+  slot BookingSlot
+
+  status EnquiryStatus @default(NEW)
+
+  source BookingSource @default(INTERNAL)
+
+  pax Int?
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+ venue Venue @relation(fields: [venueId],references: [id])
+ venueSpace VenueSpaces @relation(fields: [venueSpaceId],references: [id])
+
+  @@index([venueId])
+  @@index([bookingDate])
+  @@index([status])
 }
 
 model RefreshToken {
@@ -224,7 +260,6 @@ enum BookingStatus {
   CONFIRMED
   CANCELLED
   COMPLETED
-  ENQUIRY
 }
 
 enum PaymentStatus {
@@ -238,7 +273,6 @@ enum CalendarStatus {
   AVAILABLE
   BOOKED
   BLOCKED
-  ENQUIRY
   MAINTENANCE
 }
 
@@ -253,4 +287,11 @@ enum BookingSource {
   PHONE
   WHATSAPP
   CUSTOMER_APP
+}
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  FOLLOW_UP
+  CONVERTED
+  CLOSED
 }

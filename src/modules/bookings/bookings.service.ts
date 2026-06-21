@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { AuthUser } from 'src/types/auth-user.interface';
@@ -8,6 +8,20 @@ export class BookingsService {
     constructor(private prisma:PrismaService){}
 
     async create(dto:CreateBookingDto,user:AuthUser){
+        const existingBooking = await this.prisma.booking.findFirst({
+           where: {
+            venueSpaceId: dto.venueSpaceId,
+            bookingDate: dto.bookingDate,
+            slot: dto.slot,
+            bookingStatus: {
+                not: 'CANCELLED',
+            },
+  },
+        })
+        if(existingBooking){
+            throw new ConflictException("Booking already exists")
+        }
+
         await this.prisma.booking.create(
             {
                 data:{
