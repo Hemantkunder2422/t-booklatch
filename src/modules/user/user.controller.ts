@@ -16,13 +16,13 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 
 @Controller('user')
-@UseGuards(JwtAuthGuard, RolesGuard)
+// @UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('add')
   @HttpCode(HttpStatus.CREATED)
-  @Roles(Role.SUPER_ADMIN, Role.VENDOR_ADMIN, Role.VENDOR_ADMIN)
+  // @Roles(Role.SUPER_ADMIN, Role.VENDOR_ADMIN, Role.VENDOR_ADMIN)
   async create(@Body() dto: CreateUserDto) {
     const result = await this.userService.createUser(dto);
     return result;

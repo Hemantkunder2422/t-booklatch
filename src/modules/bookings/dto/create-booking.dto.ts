@@ -1,4 +1,4 @@
-import { EventType,BookingSlot, BookingStatus } from "@prisma/client";
+import { EventType,BookingSlot } from "@prisma/client";
 import { Type } from "class-transformer";
 import { IsDate, IsDateString, IsEmail, IsEnum, IsNumber, IsPhoneNumber, IsString } from "class-validator";
 
@@ -20,9 +20,6 @@ export class  CreateBookingDto {
 
     @IsDateString()
     bookingDate!:Date;
-
-    @IsEnum(BookingStatus)
-    bookingStatus!:BookingStatus
 
     @IsString()
     eventName!:string;
