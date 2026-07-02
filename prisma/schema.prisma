@@ -7,33 +7,33 @@ datasource db {
 }
 
 model User {
-  id             String         @id @default(uuid())
-  name           String
-  email          String         @unique
-  password       String
-  userType       UserType
-  role           Role
-  venueId        String?
-  vendorId       String?
-  isActive       Boolean        @default(true)
-  isVerified     Boolean        @default(false)
-  createdById    String?
-  lastLoginAt    DateTime?
-  deletedAt      DateTime?
-  metaData       Json?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  isOnBoarded    Boolean?
-  invites        Invite[]
-  refreshTokens  RefreshToken[]
-  createdBookings Booking[]     @relation("BookingCreatedBy")
-  createdBy      User?          @relation("UserCreatedBy", fields: [createdById], references: [id])
-  createdByUsers User[]         @relation("UserCreatedBy")
-  vendor         Vendor?        @relation("VendorUsers", fields: [vendorId], references: [id])
-  venue          Venue?         @relation("VenueUsers", fields: [venueId], references: [id])
-  createdVendors Vendor[]       @relation("VendorCreatedBy")
-  createdVenues  Venue[]        @relation("VenueCreatedBy")
-  ownedVenues    Venue[]        @relation("VenueOwner")
+  id              String         @id @default(uuid())
+  name            String
+  email           String         @unique
+  password        String
+  userType        UserType
+  role            Role
+  venueId         String?
+  vendorId        String?
+  isActive        Boolean        @default(true)
+  isVerified      Boolean        @default(false)
+  createdById     String?
+  lastLoginAt     DateTime?
+  deletedAt       DateTime?
+  metaData        Json?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  isOnBoarded     Boolean?
+  invites         Invite[]
+  refreshTokens   RefreshToken[]
+  createdBookings Booking[]      @relation("BookingCreatedBy")
+  createdBy       User?          @relation("UserCreatedBy", fields: [createdById], references: [id])
+  createdByUsers  User[]         @relation("UserCreatedBy")
+  vendor          Vendor?        @relation("VendorUsers", fields: [vendorId], references: [id])
+  venue           Venue?         @relation("VenueUsers", fields: [venueId], references: [id])
+  createdVendors  Vendor[]       @relation("VendorCreatedBy")
+  createdVenues   Venue[]        @relation("VenueCreatedBy")
+  ownedVenues     Venue[]        @relation("VenueOwner")
 
   @@index([email])
   @@index([role])
@@ -58,33 +58,33 @@ model Invite {
 }
 
 model Venue {
-  id          String        @id @default(uuid())
-  name        String
-  description String?
-  address     String?
-  city        String?
-  state       String?
-  country     String?
-  pincode     String?
-  phone       String?
-  email       String?
-  website     String?
-  capacity    Int?
-  priceRange  String?
-  createdById String
-  isActive    Boolean       @default(true)
-  isVerified  Boolean       @default(false)
-  gallery     String[]
-  metadata    Json?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  ownerId     String
-  users       User[]        @relation("VenueUsers")
-  venueSpaces VenueSpaces[]
-  bookings    Booking[]
+  id               String           @id @default(uuid())
+  name             String
+  description      String?
+  address          String?
+  city             String?
+  state            String?
+  country          String?
+  pincode          String?
+  phone            String?
+  email            String?
+  website          String?
+  capacity         Int?
+  priceRange       String?
+  createdById      String
+  isActive         Boolean          @default(true)
+  isVerified       Boolean          @default(false)
+  gallery          String[]
+  metadata         Json?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  ownerId          String
+  users            User[]           @relation("VenueUsers")
+  venueSpaces      VenueSpaces[]
+  bookings         Booking[]
   bookingEnquiries BookingEnquiry[]
-  createdBy   User          @relation("VenueCreatedBy", fields: [createdById], references: [id])
-  owner       User          @relation("VenueOwner", fields: [ownerId], references: [id])
+  createdBy        User             @relation("VenueCreatedBy", fields: [createdById], references: [id])
+  owner            User             @relation("VenueOwner", fields: [ownerId], references: [id])
 
   @@index([city])
   @@index([name])
@@ -129,7 +129,7 @@ model VenueSpaces {
   gallery            String[]
   venue              Venue                @relation(fields: [venueId], references: [id])
   calendarEntries    VenueSpaceCalendar[]
-  bookingEnquiry BookingEnquiry[]
+  bookingEnquiry     BookingEnquiry[]
   bookings           Booking[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
@@ -186,18 +186,18 @@ model VenueSpaceCalendar {
 model BookingEnquiry {
   id String @id @default(uuid())
 
-  venueId String
+  venueId      String
   venueSpaceId String
 
-  customerName String
+  customerName  String
   customerPhone String
   customerEmail String?
 
   eventName String?
   eventType EventType?
 
-  bookingDate DateTime @db.Date
-  slot BookingSlot
+  bookingDate DateTime    @db.Date
+  slot        BookingSlot
 
   status EnquiryStatus @default(NEW)
 
@@ -210,8 +210,8 @@ model BookingEnquiry {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
- venue Venue @relation(fields: [venueId],references: [id])
- venueSpace VenueSpaces @relation(fields: [venueSpaceId],references: [id])
+  venue      Venue       @relation(fields: [venueId], references: [id])
+  venueSpace VenueSpaces @relation(fields: [venueSpaceId], references: [id])
 
   @@index([venueId])
   @@index([bookingDate])
@@ -230,6 +230,13 @@ model RefreshToken {
   user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
+}
+
+model WebsiteLead {
+  id    String @id @default(uuid())
+  name  String
+  email String @unique
+  phone String
 }
 
 enum UserType {
@@ -296,6 +303,7 @@ enum BookingSource {
   WHATSAPP
   CUSTOMER_APP
 }
+
 enum EnquiryStatus {
   NEW
   CONTACTED

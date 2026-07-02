@@ -9,6 +9,8 @@ import { InvitesModule } from './modules/invites/invites.module';
 import { VenueModule } from './modules/venue/venue.module';
 import { VendorModule } from './modules/vendor/vendor.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
+import { ModulesModule } from './src/website/modules/modules.module';
+import { WebsiteModule } from './modules/website/website.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { BookingsModule } from './modules/bookings/bookings.module';
     VenueModule,
     VendorModule,
     BookingsModule,
+    ModulesModule,
+    WebsiteModule,
   ],
   controllers: [AppController],
   providers: [AppService],
