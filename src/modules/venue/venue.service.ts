@@ -1,9 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateVenueDto } from './dto/create-venue.dto';
 import type { AuthUser } from 'src/types/auth-user.interface';
 import { AddVenueSpace } from './dto/add-venue-space.dto';
-import { UpdateVenueSpace } from './dto/update-venue.dto';
 
 @Injectable()
 export class VenueService {
@@ -96,43 +95,5 @@ export class VenueService {
     return {
       message:`${venueSpace.name} removed`
     }  
-  }
-
-  async mySpaces(venueId:string){
-    const spaces = await this.prisma.venueSpaces.findMany(
-      {
-        where:{
-          venueId:venueId
-        }
-      }
-    )
-    if(!spaces) throw new NotFoundException("space not found")
-    
-      return spaces
-  }
-
-  async editSpace(dto:UpdateVenueSpace,spaceId:string,user:AuthUser){
-    if(!spaceId) throw new NotFoundException("space not found")
-    
-      const existingSpace = await this.prisma.venueSpaces.findFirst({
-        where:{
-          id:spaceId,
-          venueId:user.venueId
-        }
-      })
-
-      if(!existingSpace){
-        throw new NotFoundException("space not found or access denied")
-      }
-
-      const updatedSpace = await this.prisma.venueSpaces.update({
-        where:{
-          id:spaceId
-        },
-        data:{
-          ...dto
-        }
-      })
-      return updatedSpace
   }
 }
