@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "booklatch-api",
-      script: "dist/main.js",
+      script: "dist/src/main.js",
       cwd: "/home/ubuntu/t-booklatch",
       instances: 1,
       exec_mode: "fork",
