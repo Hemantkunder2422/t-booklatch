@@ -19,9 +19,6 @@ jobs:
         with:
           node-version: 22
           cache: npm
-
-      - name: Remove Node Modules
-        run: rm -rf node_modules
         
       - name: Install dependencies
         run: npm ci
@@ -50,7 +47,9 @@ jobs:
           script: |
             cd /home/ubuntu/t-booklatch
 
-            npm ci --omit=dev
+            rm -rf node_modules
+
+            npm ci
 
             if pm2 describe booklatch-api > /dev/null; then
               pm2 reload ecosystem.config.js --update-env
