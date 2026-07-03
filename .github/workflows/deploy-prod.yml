@@ -50,11 +50,10 @@ jobs:
 
             cd /home/ubuntu/t-booklatch
 
-            echo "Cleaning existing dependencies..."
-            rm -rf node_modules
-
             echo "Installing dependencies..."
-            npm ci
+            if [ ! -d "node_modules" ]; then
+              npm ci
+            fi
 
             echo "Generating Prisma client..."
             npx prisma generate
