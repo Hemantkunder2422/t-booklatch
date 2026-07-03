@@ -21,6 +21,6 @@ export class WebsiteService {
       },
     });
 
-    return 'lead created successfully';
+    return 'we have already received your request our team will contact shortly';
   }
 }
