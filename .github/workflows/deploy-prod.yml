@@ -14,47 +14,64 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-        
-      - name: Install dependencies
+
+      - name: Install Dependencies
         run: npm ci
 
       - name: Generate Prisma Client
-        run: npx prisma generate  
+        run: npx prisma generate
 
-      - name: Build application
+      - name: Build Application
         run: npm run build
 
-      - name: Copy build artifacts to EC2
+      - name: Upload Build Artifacts
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "dist,package.json,package-lock.json,ecosystem.config.js"
-          target: "/home/ubuntu/t-booklatch"
+          source: |
+            dist/*
+            prisma/*
+            package.json
+            package-lock.json
+            ecosystem.config.js
+          target: /home/ubuntu/t-booklatch
+          strip_components: 0
+          overwrite: true
 
-      - name: Restart application
+      - name: Deploy Application
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -e
+
             cd /home/ubuntu/t-booklatch
 
+            echo "Cleaning existing dependencies..."
             rm -rf node_modules
 
+            echo "Installing production dependencies..."
             npm ci
 
+            echo "Generating Prisma client..."
+            npx prisma generate
+
+            echo "Restarting PM2 application..."
             if pm2 describe booklatch-api > /dev/null; then
-              pm2 reload ecosystem.config.js --update-env
+              pm2 restart booklatch-api --update-env
             else
               pm2 start ecosystem.config.js
             fi
 
             pm2 save
+
+            echo "Deployment completed successfully."
