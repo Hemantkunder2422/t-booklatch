@@ -29,22 +29,17 @@ jobs:
       - name: Build Application
         run: npm run build
 
-      - name: Upload Build Artifacts
+      - name: Upload Build Artifacts to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: |
-            dist
-            prisma
-            package.json
-            package-lock.json
-            ecosystem.config.js
-          target: /home/ubuntu/t-booklatch
+          source: "dist,prisma,package.json,package-lock.json,ecosystem.config.js"
+          target: "/home/ubuntu/t-booklatch"
           overwrite: true
 
-      - name: Restart Application
+      - name: Deploy Application
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -55,10 +50,13 @@ jobs:
 
             cd /home/ubuntu/t-booklatch
 
-            echo "Generating Prisma Client..."
+            echo "Installing dependencies..."
+            npm install --omit=dev
+
+            echo "Generating Prisma client..."
             npx prisma generate
 
-            echo "Reloading PM2..."
+            echo "Restarting PM2 application..."
             if pm2 describe booklatch-api > /dev/null; then
               pm2 reload ecosystem.config.js --update-env
             else
