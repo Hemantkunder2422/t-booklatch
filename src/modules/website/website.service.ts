@@ -12,7 +12,7 @@ export class WebsiteService {
       },
     });
     if (existingLeads) {
-      throw new ConflictException('lead already exists');
+      throw new ConflictException('We have already received your inquiry.');
     }
 
     await this.prisma.websiteLead.create({
@@ -21,6 +21,6 @@ export class WebsiteService {
       },
     });
 
-    return 'lead created successfully';
+    return `Thank you ${createWebsiteDto.name} for contacting Booklatch. We have received your inquiry successfully, and our team will reach out to you shortly to understand your requirements and discuss how Booklatch can help streamline your venue operations and bookings.`;
   }
 }

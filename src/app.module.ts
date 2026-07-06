@@ -10,12 +10,20 @@ import { VenueModule } from './modules/venue/venue.module';
 import { VendorModule } from './modules/vendor/vendor.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
 import { WebsiteModule } from './modules/website/website.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
     AuthModule,
     UserModule,
     PrismaModule,
@@ -26,6 +34,12 @@ import { WebsiteModule } from './modules/website/website.module';
     WebsiteModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

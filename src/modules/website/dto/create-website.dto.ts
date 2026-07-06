@@ -1,4 +1,4 @@
-import { IsEmail, IsPhoneNumber, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
 
 export class CreateWebsiteDto {
   @IsString()
@@ -9,4 +9,8 @@ export class CreateWebsiteDto {
 
   @IsEmail()
   email!: string;
+
+  @IsOptional()
+  @IsString()
+  message!: string;
 }
