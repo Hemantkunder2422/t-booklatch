@@ -12,6 +12,15 @@ import { BookingsModule } from './modules/bookings/bookings.module';
 import { WebsiteModule } from './modules/website/website.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { EnquiryModule } from './modules/enquiry/enquiry.module';
+import { ContractsModule } from './modules/contracts/contracts.module';
+import { ContactsModule } from './modules/contacts/contacts.module';
+import { CustomerModule } from './modules/customer/customer.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
+import { QuotesModule } from './modules/quotes/quotes.module';
+import { StaffModule } from './modules/staff/staff.module';
+import { PackagesModule } from './modules/packages/packages.module';
+import { InvoiceModule } from './modules/invoice/invoice.module';
 
 @Module({
   imports: [
@@ -32,6 +41,15 @@ import { APP_GUARD } from '@nestjs/core';
     VendorModule,
     BookingsModule,
     WebsiteModule,
+    EnquiryModule,
+    ContractsModule,
+    ContactsModule,
+    CustomerModule,
+    CalendarModule,
+    QuotesModule,
+    StaffModule,
+    PackagesModule,
+    InvoiceModule,
   ],
   controllers: [AppController],
   providers: [
