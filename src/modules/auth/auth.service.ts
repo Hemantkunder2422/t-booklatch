@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { createHash, randomBytes } from 'crypto';
 import type { User } from '@prisma/client';
 import type { AuthUser } from 'src/types/auth-user.interface';
+import { MailService } from '../mail/mail.service';
 
 const ACCESS_TOKEN_TTL = '45m';
 const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -19,6 +20,7 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private jwtService: JwtService,
+    private readonly mailServices: MailService,
   ) {}
 
   private buildPayload(user: User) {
@@ -76,6 +78,12 @@ export class AuthService {
 
     const accessToken = this.issueAccessToken(user);
     const refreshToken = await this.issueRefreshToken(user.id);
+
+    void this.mailServices
+      .sendLoginNotification(user.name, user.email)
+      .catch((error) => {
+        console.error('Error sending login notification:', error);
+      });
 
     return {
       message: 'Login successful',

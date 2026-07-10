@@ -21,6 +21,8 @@ import { QuotesModule } from './modules/quotes/quotes.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { PackagesModule } from './modules/packages/packages.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
+import { MailModule } from './modules/mail/mail.module';
+import { StorageModule } from './modules/storage/storage.module';
 
 @Module({
   imports: [
@@ -50,6 +52,8 @@ import { InvoiceModule } from './modules/invoice/invoice.module';
     StaffModule,
     PackagesModule,
     InvoiceModule,
+    MailModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [
