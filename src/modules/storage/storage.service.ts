@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 import { UploadResult } from './interfaces/upload-result.interface';
 import { Express } from 'express';
 import { UploadFile } from './interfaces/upload-file.interface';
@@ -29,13 +29,33 @@ export class StorageService {
     entityId: string,
   ): Promise<UploadResult> {
     const key = `${folder}/${entityId}/${randomUUID()}.webp`;
-    const buffer = await sharp(file.buffer).rotate().resize({
-      width: 1920,
-      withoutEnlargement: true,
-    });
+
+    const buffer = await sharp(file.buffer)
+      .rotate()
+      .resize({
+        width: 1920,
+        withoutEnlargement: true,
+      })
+      .webp({
+        quality: 85,
+      })
+      .toBuffer();
+
+    await this.s3Client.send(
+      new PutObjectCommand({
+        Bucket: this.configService.get<string>('AWS_S3_BUCKET'),
+        Key: key,
+        Body: buffer,
+        ContentType: 'image/webp',
+      }),
+    );
+
+    const bucket = this.configService.get<string>('AWS_S3_BUCKET');
+    const region = this.configService.get<string>('AWS_REGION');
+
     return {
-      key: '',
-      url: '',
+      key,
+      url: `https://${bucket}.s3.${region}.amazonaws.com/${key}`,
     };
   }
 }
