@@ -24,6 +24,7 @@ model User {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   isOnBoarded     Boolean?
+  profileImage    String?
   invites         Invite[]
   refreshTokens   RefreshToken[]
   createdBookings Booking[]      @relation("BookingCreatedBy")
@@ -147,7 +148,8 @@ model Booking {
   eventName     String
   eventType     EventType
   bookingDate   DateTime      @db.Date
-  slot          BookingSlot   @default(MORNING)
+  startTime     DateTime
+  endTime       DateTime
   bookingStatus BookingStatus @default(PENDING)
   source        BookingSource @default(INTERNAL)
   pax           Int
@@ -159,11 +161,7 @@ model Booking {
   venueSpace    VenueSpaces   @relation(fields: [venueSpaceId], references: [id])
   createdBy     User?         @relation("BookingCreatedBy", fields: [createdById], references: [id])
 
-  // Uniqueness of an *active* slot is enforced by a partial unique index
-  // (uq_booking_active_slot, created in the migration) so that CANCELLED
-  // bookings free the slot for re-booking. Prisma can't express partial
-  // indexes, hence the plain index here for query performance.
-  @@index([venueSpaceId, bookingDate, slot])
+  @@index([venueSpaceId, bookingDate, startTime, endTime])
   @@index([venueSpaceId, bookingDate])
   @@index([createdById])
 }
