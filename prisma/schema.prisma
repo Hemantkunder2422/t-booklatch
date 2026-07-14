@@ -86,10 +86,13 @@ model Venue {
   bookingEnquiries BookingEnquiry[]
   createdBy        User             @relation("VenueCreatedBy", fields: [createdById], references: [id])
   owner            User             @relation("VenueOwner", fields: [ownerId], references: [id])
+  latitude         Decimal?         @db.Decimal(9, 6)
+  longitude        Decimal?         @db.Decimal(9, 6)
 
   @@index([city])
   @@index([name])
   @@index([createdById])
+  @@index([latitude, longitude])
 }
 
 model Vendor {
@@ -139,29 +142,32 @@ model VenueSpaces {
 }
 
 model Booking {
-  id            String        @id @default(uuid())
-  venueId       String
-  venueSpaceId  String
-  customerName  String
-  customerPhone String
-  customerEmail String
-  eventName     String
-  eventType     EventType
-  bookingDate   DateTime      @db.Date
-  startTime     DateTime
-  endTime       DateTime
-  bookingStatus BookingStatus @default(PENDING)
-  source        BookingSource @default(INTERNAL)
-  pax           Int
-  notes         String?
-  createdById   String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  venue         Venue         @relation(fields: [venueId], references: [id])
-  venueSpace    VenueSpaces   @relation(fields: [venueSpaceId], references: [id])
-  createdBy     User?         @relation("BookingCreatedBy", fields: [createdById], references: [id])
+  id              String               @id @default(uuid())
+  venueId         String
+  venueSpaceId    String
+  customerName    String
+  customerPhone   String
+  customerEmail   String
+  eventName       String
+  eventType       EventType
+  bookingDate     DateTime             @db.Date
+  startTime       DateTime
+  endTime         DateTime
+  bookingStatus   BookingStatus        @default(PENDING)
+  source          BookingSource        @default(INTERNAL)
+  pax             Int
+  notes           String?
+  createdById     String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  venue           Venue                @relation(fields: [venueId], references: [id])
+  venueSpace      VenueSpaces          @relation(fields: [venueSpaceId], references: [id])
+  createdBy       User?                @relation("BookingCreatedBy", fields: [createdById], references: [id])
+  calendarEntries VenueSpaceCalendar[]
+  payments        Payment[]
+  invoice         Invoice?
+  receipts        Receipt[]
 
-  @@index([venueSpaceId, bookingDate, startTime, endTime])
   @@index([venueSpaceId, bookingDate])
   @@index([createdById])
 }
@@ -174,11 +180,13 @@ model VenueSpaceCalendar {
   status       CalendarStatus
   notes        String?
   bookingId    String?
+  booking      Booking?       @relation(fields: [bookingId], references: [id])
   venueSpace   VenueSpaces    @relation(fields: [venueSpaceId], references: [id])
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
   @@index([venueSpaceId, date])
+  @@index([bookingId])
 }
 
 model BookingEnquiry {
@@ -228,6 +236,73 @@ model RefreshToken {
   user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
+}
+
+model Payment {
+  id               String        @id @default(uuid())
+  bookingId        String
+  amount           Decimal       @db.Decimal(10, 2)
+  currency         String        @default("INR")
+  paymentMethod    PaymentType
+  paymentStatus    PaymentStatus @default(PENDING)
+  transactionID    String?
+  gatewayOrderId   String?
+  gatewayPaymentId String?
+  gatewaySignature String?
+  paidAt           DateTime
+  failureReason    String?
+  metadata         Json?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  booking          Booking       @relation(fields: [bookingId], references: [id])
+  invoice          Invoice?
+  receipts         Receipt[]
+
+  @@index([bookingId])
+  @@index([paymentStatus])
+}
+
+model Invoice {
+  id            String   @id @default(uuid())
+  bookingId     String   @unique
+  paymentId     String   @unique
+  invoiceNumber String   @unique
+  subTotal      Decimal  @db.Decimal(10, 2)
+  taxAmount     Decimal  @db.Decimal(10, 2)
+  gstPercentage Decimal? @db.Decimal(5, 2)
+  cgstAmount    Decimal? @db.Decimal(10, 2)
+  sgstAmount    Decimal? @db.Decimal(10, 2)
+  igstAmount    Decimal? @db.Decimal(10, 2)
+  issuedAt      DateTime
+  pdfUrl        String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  bookings Booking   @relation(fields: [bookingId], references: [id])
+  payments Payment   @relation(fields: [paymentId], references: [id])
+  receipts Receipt[]
+
+  @@index([bookingId])
+  @@index([paymentId])
+}
+
+model Receipt {
+  id            String      @id @default(uuid())
+  receiptNumber String      @unique
+  bookingId     String
+  paymentId     String
+  invoiceId     String?
+  amount        Decimal     @db.Decimal(10, 2)
+  paymentMethod PaymentType
+  pdfUrl        String?
+  issuedAt      DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  booking Booking  @relation(fields: [bookingId], references: [id])
+  payment Payment  @relation(fields: [paymentId], references: [id])
+  invoice Invoice? @relation(fields: [invoiceId], references: [id])
 }
 
 model WebsiteLead {
@@ -281,6 +356,13 @@ enum PaymentStatus {
   PARTIAL
   PAID
   REFUNDED
+}
+
+enum PaymentType {
+  CASH
+  CARD
+  UPI
+  NET_BANKING
 }
 
 enum CalendarStatus {
