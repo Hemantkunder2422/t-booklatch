@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "BookingStatus" ADD VALUE 'BOOKING_IN_PROGRESS';

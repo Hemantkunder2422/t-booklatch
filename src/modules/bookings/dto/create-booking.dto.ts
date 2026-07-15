@@ -35,9 +35,11 @@ export class CreateBookingDto {
   @IsEnum(EventType)
   eventType!: EventType;
 
+  @Type(() => Date)
   @IsDate()
   start_time!: Date;
 
+  @Type(() => Date)
   @IsDate()
   end_time!: Date;
 

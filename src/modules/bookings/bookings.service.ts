@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { AuthUser } from 'src/types/auth-user.interface';
+import { BookingStatus } from '@prisma/client';
 
 @Injectable()
 export class BookingsService {
@@ -11,16 +12,10 @@ export class BookingsService {
     const existingBooking = await this.prisma.booking.findFirst({
       where: {
         venueSpaceId: dto.venueSpaceId,
-        bookingDate: dto.bookingDate,
-        startTime: dto.start_time,
-        endTime: dto.end_time,
-        bookingStatus: {
-          not: 'CANCELLED',
-        },
       },
     });
     if (existingBooking) {
-      throw new ConflictException('Booking already exists');
+      throw new ConflictException('Slot is already booked');
     }
 
     await this.prisma.booking.create({
