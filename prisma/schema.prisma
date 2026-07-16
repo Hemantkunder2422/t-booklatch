@@ -43,6 +43,23 @@ model User {
   @@index([vendorId])
 }
 
+model VenueImageGallery {
+  id           String       @id @default(uuid())
+  venueId      String
+  venueSpaceId String?
+  imageKey     String
+  displayOrder Int          @default(0)
+  venue        Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  venueSpace   VenueSpaces? @relation(fields: [venueSpaceId], references: [id], onDelete: Cascade)
+  isPrimary    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([venueId, venueSpaceId, displayOrder])
+  @@index([venueId])
+  @@index([venueSpaceId])
+}
+
 model Invite {
   id          String   @id @default(uuid())
   email       String
@@ -59,35 +76,37 @@ model Invite {
 }
 
 model Venue {
-  id               String           @id @default(uuid())
-  name             String
-  description      String?
-  address          String?
-  city             String?
-  state            String?
-  country          String?
-  pincode          String?
-  phone            String?
-  email            String?
-  website          String?
-  capacity         Int?
-  priceRange       String?
-  createdById      String
-  isActive         Boolean          @default(true)
-  isVerified       Boolean          @default(false)
-  gallery          String[]
-  metadata         Json?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  ownerId          String
-  users            User[]           @relation("VenueUsers")
-  venueSpaces      VenueSpaces[]
-  bookings         Booking[]
-  bookingEnquiries BookingEnquiry[]
-  createdBy        User             @relation("VenueCreatedBy", fields: [createdById], references: [id])
-  owner            User             @relation("VenueOwner", fields: [ownerId], references: [id])
-  latitude         Decimal?         @db.Decimal(9, 6)
-  longitude        Decimal?         @db.Decimal(9, 6)
+  id                  String              @id @default(uuid())
+  name                String
+  description         String?
+  address             String?
+  city                String?
+  state               String?
+  country             String?
+  pincode             String?
+  phone               String?
+  email               String?
+  website             String?
+  capacity            Int?
+  priceRange          String?
+  openingTime         String
+  closingTime         String
+  createdById         String
+  isActive            Boolean             @default(true)
+  isVerified          Boolean             @default(false)
+  metadata            Json?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  ownerId             String
+  users               User[]              @relation("VenueUsers")
+  venueSpaces         VenueSpaces[]
+  bookings            Booking[]
+  bookingEnquiries    BookingEnquiry[]
+  createdBy           User                @relation("VenueCreatedBy", fields: [createdById], references: [id])
+  owner               User                @relation("VenueOwner", fields: [ownerId], references: [id])
+  latitude            Decimal?            @db.Decimal(9, 6)
+  longitude           Decimal?            @db.Decimal(9, 6)
+  venueImageGalleries VenueImageGallery[]
 
   @@index([city])
   @@index([name])
@@ -122,21 +141,21 @@ model Vendor {
 }
 
 model VenueSpaces {
-  id                 String               @id @default(uuid())
-  venueId            String
-  name               String
-  description        String
-  morningSlotEnabled Boolean              @default(true)
-  eveningSlotEnabled Boolean              @default(true)
-  fullDaySlotEnabled Boolean              @default(true)
-  pax                Int
-  gallery            String[]
-  venue              Venue                @relation(fields: [venueId], references: [id])
-  calendarEntries    VenueSpaceCalendar[]
-  bookingEnquiry     BookingEnquiry[]
-  bookings           Booking[]
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  id                  String               @id @default(uuid())
+  venueId             String
+  name                String
+  description         String
+  morningSlotEnabled  Boolean              @default(true)
+  eveningSlotEnabled  Boolean              @default(true)
+  fullDaySlotEnabled  Boolean              @default(true)
+  pax                 Int
+  venue               Venue                @relation(fields: [venueId], references: [id])
+  calendarEntries     VenueSpaceCalendar[]
+  bookingEnquiry      BookingEnquiry[]
+  bookings            Booking[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  venueImageGalleries VenueImageGallery[]
 
   @@index([venueId, name])
 }
