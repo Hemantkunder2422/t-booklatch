@@ -24,6 +24,7 @@ model User {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   isOnBoarded     Boolean?
+  profileImage    String?
   invites         Invite[]
   refreshTokens   RefreshToken[]
   createdBookings Booking[]      @relation("BookingCreatedBy")
@@ -42,6 +43,23 @@ model User {
   @@index([vendorId])
 }
 
+model VenueImageGallery {
+  id           String       @id @default(uuid())
+  venueId      String
+  venueSpaceId String?
+  imageKey     String
+  displayOrder Int          @default(0)
+  venue        Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  venueSpace   VenueSpaces? @relation(fields: [venueSpaceId], references: [id], onDelete: Cascade)
+  isPrimary    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([venueId, venueSpaceId, displayOrder])
+  @@index([venueId])
+  @@index([venueSpaceId])
+}
+
 model Invite {
   id          String   @id @default(uuid())
   email       String
@@ -58,37 +76,42 @@ model Invite {
 }
 
 model Venue {
-  id               String           @id @default(uuid())
-  name             String
-  description      String?
-  address          String?
-  city             String?
-  state            String?
-  country          String?
-  pincode          String?
-  phone            String?
-  email            String?
-  website          String?
-  capacity         Int?
-  priceRange       String?
-  createdById      String
-  isActive         Boolean          @default(true)
-  isVerified       Boolean          @default(false)
-  gallery          String[]
-  metadata         Json?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  ownerId          String
-  users            User[]           @relation("VenueUsers")
-  venueSpaces      VenueSpaces[]
-  bookings         Booking[]
-  bookingEnquiries BookingEnquiry[]
-  createdBy        User             @relation("VenueCreatedBy", fields: [createdById], references: [id])
-  owner            User             @relation("VenueOwner", fields: [ownerId], references: [id])
+  id                  String              @id @default(uuid())
+  name                String
+  description         String?
+  address             String?
+  city                String?
+  state               String?
+  country             String?
+  pincode             String?
+  phone               String?
+  email               String?
+  website             String?
+  capacity            Int?
+  priceRange          String?
+  openingTime         String?
+  closingTime         String?
+  createdById         String
+  isActive            Boolean             @default(true)
+  isVerified          Boolean             @default(false)
+  metadata            Json?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  ownerId             String
+  users               User[]              @relation("VenueUsers")
+  venueSpaces         VenueSpaces[]
+  bookings            Booking[]
+  bookingEnquiries    BookingEnquiry[]
+  createdBy           User                @relation("VenueCreatedBy", fields: [createdById], references: [id])
+  owner               User                @relation("VenueOwner", fields: [ownerId], references: [id])
+  latitude            Decimal?            @db.Decimal(9, 6)
+  longitude           Decimal?            @db.Decimal(9, 6)
+  venueImageGalleries VenueImageGallery[]
 
   @@index([city])
   @@index([name])
   @@index([createdById])
+  @@index([latitude, longitude])
 }
 
 model Vendor {
@@ -118,52 +141,52 @@ model Vendor {
 }
 
 model VenueSpaces {
-  id                 String               @id @default(uuid())
-  venueId            String
-  name               String
-  description        String
-  morningSlotEnabled Boolean              @default(true)
-  eveningSlotEnabled Boolean              @default(true)
-  fullDaySlotEnabled Boolean              @default(true)
-  pax                Int
-  gallery            String[]
-  venue              Venue                @relation(fields: [venueId], references: [id])
-  calendarEntries    VenueSpaceCalendar[]
-  bookingEnquiry     BookingEnquiry[]
-  bookings           Booking[]
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  id                  String               @id @default(uuid())
+  venueId             String
+  name                String
+  description         String
+  morningSlotEnabled  Boolean              @default(true)
+  eveningSlotEnabled  Boolean              @default(true)
+  fullDaySlotEnabled  Boolean              @default(true)
+  pax                 Int
+  venue               Venue                @relation(fields: [venueId], references: [id])
+  calendarEntries     VenueSpaceCalendar[]
+  bookingEnquiry      BookingEnquiry[]
+  bookings            Booking[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  venueImageGalleries VenueImageGallery[]
 
   @@index([venueId, name])
 }
 
 model Booking {
-  id            String        @id @default(uuid())
-  venueId       String
-  venueSpaceId  String
-  customerName  String
-  customerPhone String
-  customerEmail String
-  eventName     String
-  eventType     EventType
-  bookingDate   DateTime      @db.Date
-  slot          BookingSlot   @default(MORNING)
-  bookingStatus BookingStatus @default(PENDING)
-  source        BookingSource @default(INTERNAL)
-  pax           Int
-  notes         String?
-  createdById   String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  venue         Venue         @relation(fields: [venueId], references: [id])
-  venueSpace    VenueSpaces   @relation(fields: [venueSpaceId], references: [id])
-  createdBy     User?         @relation("BookingCreatedBy", fields: [createdById], references: [id])
+  id              String               @id @default(uuid())
+  venueId         String
+  venueSpaceId    String
+  customerName    String
+  customerPhone   String
+  customerEmail   String
+  eventName       String
+  eventType       EventType
+  bookingDate     DateTime             @db.Date
+  startTime       DateTime
+  endTime         DateTime
+  bookingStatus   BookingStatus        @default(PENDING)
+  source          BookingSource        @default(INTERNAL)
+  pax             Int
+  notes           String?
+  createdById     String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  venue           Venue                @relation(fields: [venueId], references: [id])
+  venueSpace      VenueSpaces          @relation(fields: [venueSpaceId], references: [id])
+  createdBy       User?                @relation("BookingCreatedBy", fields: [createdById], references: [id])
+  calendarEntries VenueSpaceCalendar[]
+  payments        Payment[]
+  invoice         Invoice?
+  receipts        Receipt[]
 
-  // Uniqueness of an *active* slot is enforced by a partial unique index
-  // (uq_booking_active_slot, created in the migration) so that CANCELLED
-  // bookings free the slot for re-booking. Prisma can't express partial
-  // indexes, hence the plain index here for query performance.
-  @@index([venueSpaceId, bookingDate, slot])
   @@index([venueSpaceId, bookingDate])
   @@index([createdById])
 }
@@ -176,42 +199,34 @@ model VenueSpaceCalendar {
   status       CalendarStatus
   notes        String?
   bookingId    String?
+  booking      Booking?       @relation(fields: [bookingId], references: [id])
   venueSpace   VenueSpaces    @relation(fields: [venueSpaceId], references: [id])
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
   @@index([venueSpaceId, date])
+  @@index([bookingId])
 }
 
 model BookingEnquiry {
-  id String @id @default(uuid())
-
-  venueId      String
-  venueSpaceId String
-
+  id            String        @id @default(uuid())
+  venueId       String
+  venueSpaceId  String
   customerName  String
   customerPhone String
   customerEmail String?
-
-  eventName String?
-  eventType EventType?
-
-  bookingDate DateTime    @db.Date
-  slot        BookingSlot
-
-  status EnquiryStatus @default(NEW)
-
-  source BookingSource @default(INTERNAL)
-
-  pax Int?
-
-  notes String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  venue      Venue       @relation(fields: [venueId], references: [id])
-  venueSpace VenueSpaces @relation(fields: [venueSpaceId], references: [id])
+  eventName     String?
+  eventType     EventType?
+  bookingDate   DateTime      @db.Date
+  slot          BookingSlot
+  status        EnquiryStatus @default(NEW)
+  source        BookingSource @default(INTERNAL)
+  pax           Int?
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  venue         Venue         @relation(fields: [venueId], references: [id])
+  venueSpace    VenueSpaces   @relation(fields: [venueSpaceId], references: [id])
 
   @@index([venueId])
   @@index([bookingDate])
@@ -232,6 +247,92 @@ model RefreshToken {
   @@index([userId])
 }
 
+model Payment {
+  id               String        @id @default(uuid())
+  bookingId        String
+  amount           Decimal       @db.Decimal(10, 2)
+  currency         String        @default("INR")
+  paymentMethod    PaymentType
+  paymentStatus    PaymentStatus @default(PENDING)
+  transactionID    String?
+  gatewayOrderId   String?
+  gatewayPaymentId String?
+  gatewaySignature String?
+  paidAt           DateTime
+  failureReason    String?
+  metadata         Json?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  booking          Booking       @relation(fields: [bookingId], references: [id])
+  invoice          Invoice?
+  receipts         Receipt[]
+
+  @@index([bookingId])
+  @@index([paymentStatus])
+}
+
+model Invoice {
+  id               String            @id @default(uuid())
+  bookingId        String            @unique
+  paymentId        String            @unique
+  invoiceNumber    String            @unique
+  subTotal         Decimal           @db.Decimal(10, 2)
+  taxAmount        Decimal           @db.Decimal(10, 2)
+  gstPercentage    Decimal?          @db.Decimal(5, 2)
+  cgstAmount       Decimal?          @db.Decimal(10, 2)
+  sgstAmount       Decimal?          @db.Decimal(10, 2)
+  igstAmount       Decimal?          @db.Decimal(10, 2)
+  issuedAt         DateTime
+  pdfUrl           String?
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  bookings         Booking           @relation(fields: [bookingId], references: [id])
+  payments         Payment           @relation(fields: [paymentId], references: [id])
+  receipts         Receipt[]
+  invoiceLineItems BillingLineItem[]
+
+  @@index([bookingId])
+  @@index([paymentId])
+}
+
+model Receipt {
+  id               String            @id @default(uuid())
+  receiptNumber    String            @unique
+  bookingId        String
+  paymentId        String
+  invoiceId        String?
+  amount           Decimal           @db.Decimal(10, 2)
+  paymentMethod    PaymentType
+  pdfUrl           String?
+  issuedAt         DateTime          @default(now())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  booking          Booking           @relation(fields: [bookingId], references: [id])
+  payment          Payment           @relation(fields: [paymentId], references: [id])
+  invoice          Invoice?          @relation(fields: [invoiceId], references: [id])
+  invoiceLineItems BillingLineItem[]
+}
+
+model BillingLineItem {
+  id            String                  @id @default(uuid())
+  invoiceId     String?
+  receiptId     String?
+  description   String
+  category      InvoiceLineItemCategory
+  quantity      Int
+  unitPrice     Decimal                 @db.Decimal(10, 2)
+  taxPercentage Decimal                 @db.Decimal(10, 2)
+  taxAmount     Decimal                 @db.Decimal(10, 2)
+  discount      Decimal                 @default(0) @db.Decimal(10, 2)
+  totalAmount   Decimal                 @db.Decimal(10, 2)
+  invoice       Invoice?                @relation(fields: [invoiceId], references: [id])
+  receipt       Receipt?                @relation(fields: [receiptId], references: [id])
+
+  @@index([invoiceId])
+  @@index([receiptId])
+}
+
 model WebsiteLead {
   id      String  @id @default(uuid())
   name    String
@@ -244,6 +345,14 @@ enum UserType {
   VENDOR
   VENUE
   ADMIN
+}
+
+enum InvoiceLineItemCategory {
+  VENUE_RENT
+  CATERING
+  DECORATION
+  PARKING
+  OTHERS
 }
 
 enum Role {
@@ -272,10 +381,12 @@ enum EventType {
 }
 
 enum BookingStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-  COMPLETED
+  PENDING // Booking created, awaiting action or payment
+  BOOKING_IN_PROGRESS // Staff/admin is actively creating the booking
+  LOCKED // Slot reserved for a customer for a limited period (e.g. 24 hours)
+  CONFIRMED // Payment successful, booking confirmed
+  CANCELLED // Booking cancelled or abandoned
+  COMPLETED // Event has concluded
 }
 
 enum PaymentStatus {
@@ -283,6 +394,13 @@ enum PaymentStatus {
   PARTIAL
   PAID
   REFUNDED
+}
+
+enum PaymentType {
+  CASH
+  CARD
+  UPI
+  NET_BANKING
 }
 
 enum CalendarStatus {

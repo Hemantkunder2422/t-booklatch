@@ -1,38 +1,51 @@
-import { EventType,BookingSlot } from "@prisma/client";
-import { Type } from "class-transformer";
-import { IsDate, IsDateString, IsEmail, IsEnum, IsNumber, IsPhoneNumber, IsString } from "class-validator";
+import { EventType, BookingSlot } from '@prisma/client';
+import { Type } from 'class-transformer';
+import {
+  IsDate,
+  IsDateString,
+  IsEmail,
+  IsEnum,
+  IsNumber,
+  IsPhoneNumber,
+  IsString,
+} from 'class-validator';
 
-export class  CreateBookingDto {
-    @IsString()
-    venueId!:string;
+export class CreateBookingDto {
+  @IsString()
+  venueId!: string;
 
-    @IsString()
-    venueSpaceId!:string;
+  @IsString()
+  venueSpaceId!: string;
 
-     @IsString()
-    customerName!:string;
+  @IsString()
+  customerName!: string;
 
-    @IsPhoneNumber()
-    customerPhone!:string;
+  @IsPhoneNumber()
+  customerPhone!: string;
 
-    @IsEmail()    
-    customerEmail!:string;
+  @IsEmail()
+  customerEmail!: string;
 
-    @IsDateString()
-    bookingDate!:Date;
+  @IsDateString()
+  bookingDate!: Date;
 
-    @IsString()
-    eventName!:string;
+  @IsString()
+  eventName!: string;
 
-    @IsEnum(EventType)
-    eventType!:EventType
+  @IsEnum(EventType)
+  eventType!: EventType;
 
-    @IsEnum(BookingSlot)
-    slot!:BookingSlot
-                                                                                        
-    @IsNumber()
-    pax!:number
+  @Type(() => Date)
+  @IsDate()
+  start_time!: Date;
 
-    @IsString()
-    notes!:string
+  @Type(() => Date)
+  @IsDate()
+  end_time!: Date;
+
+  @IsNumber()
+  pax!: number;
+
+  @IsString()
+  notes!: string;
 }
