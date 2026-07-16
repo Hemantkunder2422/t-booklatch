@@ -89,8 +89,8 @@ model Venue {
   website             String?
   capacity            Int?
   priceRange          String?
-  openingTime         String
-  closingTime         String
+  openingTime         String?
+  closingTime         String?
   createdById         String
   isActive            Boolean             @default(true)
   isVerified          Boolean             @default(false)

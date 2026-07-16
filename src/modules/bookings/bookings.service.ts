@@ -9,13 +9,40 @@ export class BookingsService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateBookingDto, user: AuthUser) {
-    const existingBooking = await this.prisma.booking.findFirst({
+    const overlappingBooking = await this.prisma.booking.findFirst({
       where: {
         venueSpaceId: dto.venueSpaceId,
+
+        bookingDate: dto.bookingDate,
+
+        bookingStatus: {
+          in: [
+            BookingStatus.PENDING,
+            BookingStatus.CONFIRMED,
+            BookingStatus.BOOKING_IN_PROGRESS,
+            BookingStatus.LOCKED,
+          ],
+        },
+
+        AND: [
+          {
+            startTime: {
+              lt: dto.end_time,
+            },
+          },
+          {
+            endTime: {
+              gt: dto.start_time,
+            },
+          },
+        ],
       },
     });
-    if (existingBooking) {
-      throw new ConflictException('Slot is already booked');
+
+    if (overlappingBooking) {
+      throw new ConflictException(
+        'Selected time slot overlaps with an existing booking.',
+      );
     }
 
     await this.prisma.booking.create({
@@ -32,8 +59,10 @@ export class BookingsService {
         endTime: dto.end_time,
         pax: dto.pax,
         notes: dto.notes,
+        createdById: user.userId,
       },
     });
+
     return 'Booking created';
   }
 }
