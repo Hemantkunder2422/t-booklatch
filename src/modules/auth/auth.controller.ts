@@ -16,6 +16,7 @@ import { Roles } from './roles.decorator';
 import { Role } from '@prisma/client';
 import { CurrentUser } from '../user/current-user.decorator';
 import type { AuthUser } from 'src/types/auth-user.interface';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
@@ -69,7 +70,6 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @UseGuards(JwtAuthGuard)
   async refresh(@Req() req: Request, @Res() res: Response) {
     const refreshToken = req.cookies?.refreshToken;
     const result = await this.authService.refresh(refreshToken);
@@ -78,14 +78,14 @@ export class AuthController {
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
-      maxAge: 15 * 60 * 1000,
+      sameSite: 'lax',
+      maxAge: 45 * 60 * 1000,
     });
 
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

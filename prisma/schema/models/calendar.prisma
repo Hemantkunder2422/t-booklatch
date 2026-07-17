@@ -1,0 +1,16 @@
+model VenueSpaceCalendar {
+    id           String         @id @default(uuid())
+    venueSpaceId String
+    date         DateTime       @db.Date
+    slot         BookingSlot
+    status       CalendarStatus
+    notes        String?
+    bookingId    String?
+    booking      Booking?       @relation(fields: [bookingId], references: [id])
+    venueSpace   VenueSpaces    @relation(fields: [venueSpaceId], references: [id])
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+
+    @@index([venueSpaceId, date])
+    @@index([bookingId])
+}

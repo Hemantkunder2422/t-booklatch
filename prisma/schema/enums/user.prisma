@@ -1,0 +1,15 @@
+enum Role {
+    VENDOR_ADMIN
+    VENDOR_STAFF
+    VENUE_ADMIN
+    VENUE_STAFF
+    SUPER_ADMIN
+    ADMIN
+    SUPPORT
+}
+
+enum UserType {
+    VENDOR
+    VENUE
+    ADMIN
+}

@@ -1,0 +1,52 @@
+model User {
+    id              String         @id @default(uuid())
+    name            String
+    email           String         @unique
+    password        String
+    userType        UserType
+    role            Role
+    venueId         String?
+    vendorId        String?
+    isActive        Boolean        @default(true)
+    isVerified      Boolean        @default(false)
+    createdById     String?
+    lastLoginAt     DateTime?
+    deletedAt       DateTime?
+    metaData        Json?
+    createdAt       DateTime       @default(now())
+    updatedAt       DateTime       @updatedAt
+    isOnBoarded     Boolean?
+    profileImage    String?
+    tenantId        String
+    invites         Invite[]
+    refreshTokens   RefreshToken[]
+    createdBookings Booking[]      @relation("BookingCreatedBy")
+    createdBy       User?          @relation("UserCreatedBy", fields: [createdById], references: [id])
+    createdByUsers  User[]         @relation("UserCreatedBy")
+    vendor          Vendor?        @relation("VendorUsers", fields: [vendorId], references: [id])
+    venue           Venue?         @relation("VenueUsers", fields: [venueId], references: [id])
+    createdVendors  Vendor[]       @relation("VendorCreatedBy")
+    createdVenues   Venue[]        @relation("VenueCreatedBy")
+    tenant          Tenant         @relation(fields: [tenantId], references: [id])
+
+    @@index([email])
+    @@index([role])
+    @@index([userType])
+    @@index([venueId])
+    @@index([vendorId])
+}
+
+model Invite {
+    id          String   @id @default(uuid())
+    email       String
+    role        Role
+    userType    UserType
+    invitedById String
+    token       String   @unique
+    expiresAt   DateTime
+    isUsed      Boolean  @default(false)
+    createdAt   DateTime @default(now())
+    vendorId    String?
+    venueId     String?
+    invitedBy   User     @relation(fields: [invitedById], references: [id])
+}
