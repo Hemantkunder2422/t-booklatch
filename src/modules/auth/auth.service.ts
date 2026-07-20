@@ -28,7 +28,6 @@ export class AuthService {
     return {
       sub: user.id,
       role: user.role,
-      venueId: user.venueId,
       vendorId: user.vendorId,
       type: user.userType,
     };
@@ -96,7 +95,6 @@ export class AuthService {
         email: user.email,
         role: user.role,
         type: user.userType,
-        venueId: user.venueId,
         vendorId: user.vendorId,
       },
     };

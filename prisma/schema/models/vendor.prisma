@@ -10,6 +10,7 @@ model Vendor {
     state       String?
     country     String?
     createdById String
+    tenantId    String
     isActive    Boolean    @default(true)
     isVerified  Boolean    @default(false)
     metaData    Json?
@@ -17,8 +18,9 @@ model Vendor {
     updatedAt   DateTime   @updatedAt
     lat         Float?
     long        Float?
-    users       User[]     @relation("VendorUsers")
     createdBy   User       @relation("VendorCreatedBy", fields: [createdById], references: [id])
+    users       User[]
+    tenant      Tenant     @relation(fields: [tenantId], references: [id])
 
     @@index([type])
     @@index([city])

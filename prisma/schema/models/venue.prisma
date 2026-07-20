@@ -21,15 +21,14 @@ model Venue {
     createdAt           DateTime            @default(now())
     updatedAt           DateTime            @updatedAt
     tenantId            String
-    users               User[]              @relation("VenueUsers")
     venueSpaces         VenueSpaces[]
     bookings            Booking[]
     bookingEnquiries    BookingEnquiry[]
     tenant              Tenant              @relation(fields: [tenantId], references: [id])
-    createdBy           User                @relation("VenueCreatedBy", fields: [createdById], references: [id])
     latitude            Decimal?            @db.Decimal(9, 6)
     longitude           Decimal?            @db.Decimal(9, 6)
     venueImageGalleries VenueImageGallery[]
+    userVenues          UserVenue[]
 
     @@index([city])
     @@index([name])

@@ -29,6 +29,7 @@ export class UserService {
       data: {
         ...createUserDto,
         password: hashedPassword,
+        tenantId: hashedPassword,
       },
       select: {
         id: true,

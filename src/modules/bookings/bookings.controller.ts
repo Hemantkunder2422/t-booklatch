@@ -8,15 +8,17 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { CurrentUser } from '../user/current-user.decorator';
 import type { AuthUser } from 'src/types/auth-user.interface';
 
-
 @Controller('bookings')
-@UseGuards(JwtAuthGuard,RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class BookingsController {
-    constructor(private booking:BookingsService){}
+  constructor(private booking: BookingsService) {}
 
-    @Post('create')
-    @Roles(Role.VENUE_ADMIN,Role.VENUE_STAFF)
-    async createBooking(@Body() dto:CreateBookingDto , @CurrentUser() user:AuthUser){
-        return this.booking.create(dto,user)
-    }
+  @Post('create')
+  @Roles(Role.OWNER, Role.MANAGER, Role.STAFF)
+  async createBooking(
+    @Body() dto: CreateBookingDto,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.booking.create(dto, user);
+  }
 }

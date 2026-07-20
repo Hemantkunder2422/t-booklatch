@@ -1,52 +1,90 @@
 model User {
-    id              String         @id @default(uuid())
-    name            String
-    email           String         @unique
-    password        String
-    userType        UserType
-    role            Role
-    venueId         String?
-    vendorId        String?
-    isActive        Boolean        @default(true)
-    isVerified      Boolean        @default(false)
-    createdById     String?
-    lastLoginAt     DateTime?
-    deletedAt       DateTime?
-    metaData        Json?
-    createdAt       DateTime       @default(now())
-    updatedAt       DateTime       @updatedAt
-    isOnBoarded     Boolean?
-    profileImage    String?
-    tenantId        String
-    invites         Invite[]
-    refreshTokens   RefreshToken[]
-    createdBookings Booking[]      @relation("BookingCreatedBy")
-    createdBy       User?          @relation("UserCreatedBy", fields: [createdById], references: [id])
-    createdByUsers  User[]         @relation("UserCreatedBy")
-    vendor          Vendor?        @relation("VendorUsers", fields: [vendorId], references: [id])
-    venue           Venue?         @relation("VenueUsers", fields: [venueId], references: [id])
-    createdVendors  Vendor[]       @relation("VendorCreatedBy")
-    createdVenues   Venue[]        @relation("VenueCreatedBy")
-    tenant          Tenant         @relation(fields: [tenantId], references: [id])
+    id                 String         @id @default(uuid())
+    name               String
+    email              String         @unique
+    password           String
+    userType           UserType
+    role               Role
+    isActive           Boolean        @default(true)
+    isVerified         Boolean        @default(false)
+    createdById        String?
+    lastLoginAt        DateTime?
+    deletedAt          DateTime?
+    metaData           Json?
+    createdAt          DateTime       @default(now())
+    updatedAt          DateTime       @updatedAt
+    isOnBoarded        Boolean?
+    profileImage       String?
+    tenantId           String
+    invites            Invite[]
+    refreshTokens      RefreshToken[]
+    createdBookings    Booking[]      @relation("BookingCreatedBy")
+    createdBy          User?          @relation("UserCreatedBy", fields: [createdById], references: [id])
+    createdByUsers     User[]         @relation("UserCreatedBy")
+    createdVendors     Vendor[]       @relation("VendorCreatedBy")
+    tenant             Tenant         @relation(fields: [tenantId], references: [id])
+    vendor             Vendor?        @relation(fields: [vendorId], references: [id])
+    vendorId           String?
+    venueAssignments   UserVenue[]    @relation("UserVenueAssignments")
+    assignedVenueUsers UserVenue[]    @relation("UserVenueAssignedBy")
 
     @@index([email])
     @@index([role])
     @@index([userType])
-    @@index([venueId])
-    @@index([vendorId])
+    @@index([tenantId])
 }
 
 model Invite {
-    id          String   @id @default(uuid())
-    email       String
-    role        Role
-    userType    UserType
+    id String @id @default(uuid())
+
+    email String
+
+    inviteType InviteType
+    status     InviteStatus @default(PENDING)
+
+    tenantType TenantType?
+
+    role     Role
+    userType UserType
+
+    tenantId String?
+    venueId  String?
+
+    tenantName String?
+
     invitedById String
-    token       String   @unique
-    expiresAt   DateTime
-    isUsed      Boolean  @default(false)
-    createdAt   DateTime @default(now())
-    vendorId    String?
-    venueId     String?
-    invitedBy   User     @relation(fields: [invitedById], references: [id])
+
+    token String @unique
+
+    expiresAt  DateTime
+    acceptedAt DateTime?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    invitedBy User    @relation(fields: [invitedById], references: [id])
+    tenant    Tenant? @relation(fields: [tenantId], references: [id])
+
+    @@index([email])
+    @@index([tenantId])
+    @@index([status])
+    @@index([inviteType])
+}
+
+model UserVenue {
+    id String @id @default(uuid())
+
+    userId  String
+    venueId String
+
+    user User @relation("UserVenueAssignments", fields: [userId], references: [id], onDelete: Cascade)
+
+    assignedById String?
+    assignedAt   DateTime @default(now())
+    venue        Venue    @relation(fields: [venueId], references: [id])
+    assignedBy   User?    @relation("UserVenueAssignedBy", fields: [assignedById], references: [id])
+
+    @@unique([userId, venueId])
+    @@index([userId])
+    @@index([venueId])
 }

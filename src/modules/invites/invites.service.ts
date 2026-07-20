@@ -107,6 +107,7 @@ export class InvitesService {
           password: hashedPassword,
           role: inviteToken.role,
           userType: inviteToken.userType,
+          tenantId: hashedPassword,
         },
       });
 
@@ -133,7 +134,7 @@ export class InvitesService {
     await this.prisma.invite.create({
       data: {
         email: dto.email,
-        role: user.role === 'VENDOR_ADMIN' ? 'VENDOR_STAFF' : 'VENUE_STAFF',
+        role: user.role === 'OWNER' ? 'MANAGER' : 'STAFF',
         userType: user.type,
         token: hashToken,
         invitedById: user.userId,
