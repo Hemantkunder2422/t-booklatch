@@ -21,6 +21,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       type: payload.type,
       venueId: payload.venueId,
       vendorId: payload.vendorId,
+      tenantId: payload.tenantId,
+      tenantType: payload.tenantType,
     };
   }
 }

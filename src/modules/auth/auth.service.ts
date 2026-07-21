@@ -8,7 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, randomBytes } from 'crypto';
-import type { User } from '@prisma/client';
+import { TenantType, type User } from '@prisma/client';
 import type { AuthUser } from 'src/types/auth-user.interface';
 import { MailService } from '../mail/mail.service';
 import { ConfigService } from '@nestjs/config';
@@ -30,6 +30,7 @@ export class AuthService {
       role: user.role,
       vendorId: user.vendorId,
       type: user.userType,
+      tenantId: user.tenantId,
     };
   }
 
@@ -95,7 +96,7 @@ export class AuthService {
         email: user.email,
         role: user.role,
         type: user.userType,
-        vendorId: user.vendorId,
+        tenantId: user.tenantId,
       },
     };
   }
