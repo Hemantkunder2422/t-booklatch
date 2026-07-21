@@ -40,7 +40,7 @@ export class InvitesController {
   }
 
   @Post('accept')
-  @Roles(Role.MANAGER, Role.OWNER, Role.STAFF)
+  @Roles(Role.MANAGER, Role.OWNER, Role.STAFF, Role.SUPER_ADMIN)
   async acceptInvite(@Body() dto: AcceptInviteDto) {
     return this.invite.acceptInvite(dto);
   }

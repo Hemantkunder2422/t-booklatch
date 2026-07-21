@@ -35,6 +35,7 @@ export class InvitesService {
         token: hashToken,
         invitedById: user.userId,
         expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
+        inviteType: 'TENANT_OWNER',
       },
     });
 
@@ -81,7 +82,7 @@ export class InvitesService {
       throw new NotFoundException('Invite not found');
     }
 
-    if (inviteToken.isUsed) {
+    if (inviteToken.status === 'ACCEPTED') {
       throw new ConflictException('Invite already used');
     }
 
@@ -113,7 +114,7 @@ export class InvitesService {
 
       await tx.invite.update({
         where: { id: inviteToken.id },
-        data: { isUsed: true },
+        data: { status: 'ACCEPTED' },
       });
     });
 
@@ -138,6 +139,7 @@ export class InvitesService {
         userType: user.type,
         token: hashToken,
         invitedById: user.userId,
+        inviteType: 'TENANT_OWNER',
         expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
       },
     });

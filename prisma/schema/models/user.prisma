@@ -15,14 +15,14 @@ model User {
     updatedAt          DateTime       @updatedAt
     isOnBoarded        Boolean?
     profileImage       String?
-    tenantId           String
+    tenantId           String?
     invites            Invite[]
     refreshTokens      RefreshToken[]
     createdBookings    Booking[]      @relation("BookingCreatedBy")
     createdBy          User?          @relation("UserCreatedBy", fields: [createdById], references: [id])
     createdByUsers     User[]         @relation("UserCreatedBy")
     createdVendors     Vendor[]       @relation("VendorCreatedBy")
-    tenant             Tenant         @relation(fields: [tenantId], references: [id])
+    tenant             Tenant?        @relation(fields: [tenantId], references: [id])
     vendor             Vendor?        @relation(fields: [vendorId], references: [id])
     vendorId           String?
     venueAssignments   UserVenue[]    @relation("UserVenueAssignments")

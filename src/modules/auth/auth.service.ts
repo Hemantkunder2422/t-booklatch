@@ -160,8 +160,7 @@ export class AuthService {
         email: true,
         role: true,
         userType: true,
-        vendorId: true,
-        venueId: true,
+        tenant: true,
       },
     });
 
@@ -178,8 +177,7 @@ export class AuthService {
         email: true,
         role: true,
         userType: true,
-        vendorId: true,
-        venueId: true,
+        tenant: true,
         isActive: true,
         isVerified: true,
         createdAt: true,

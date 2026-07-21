@@ -18,12 +18,8 @@ export class VenueService {
         const venue = await tx.venue.create({
           data: {
             ...dto,
-
-            createdBy: {
-              connect: { id: user.userId },
-            },
-
-            owner: {
+            createdById: user.userId,
+            tenant: {
               connect: { id: user.userId },
             },
           },
@@ -32,8 +28,8 @@ export class VenueService {
         await tx.user.update({
           where: { id: user.userId },
           data: {
-            venue: {
-              connect: { id: venue.id },
+            tenant: {
+              connect: { id: user.userId },
             },
           },
         });
@@ -51,7 +47,7 @@ export class VenueService {
     const venue = await this.prisma.venue.findFirst({
       where: {
         id: dto.venueId,
-        ownerId: user.userId,
+        tenantId: user.userId,
       },
     });
 
