@@ -1,0 +1,37 @@
+enum BookingSlot {
+    MORNING
+    EVENING
+    FULL_DAY
+}
+
+enum BookingSource {
+    INTERNAL
+    PHONE
+    WHATSAPP
+    CUSTOMER_APP
+}
+
+enum EnquiryStatus {
+    NEW
+    CONTACTED
+    FOLLOW_UP
+    CONVERTED
+    CLOSED
+}
+
+enum EventType {
+    WEDDING
+    BIRTHDAY
+    OTHERS
+    RECEPTION
+    CORPORATE
+}
+
+enum BookingStatus {
+    PENDING // Booking created, awaiting action or payment
+    BOOKING_IN_PROGRESS // Staff/admin is actively creating the booking
+    LOCKED // Slot reserved for a customer for a limited period (e.g. 24 hours)
+    CONFIRMED // Payment successful, booking confirmed
+    CANCELLED // Booking cancelled or abandoned
+    COMPLETED // Event has concluded
+}

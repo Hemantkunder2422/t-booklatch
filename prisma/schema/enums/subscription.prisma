@@ -1,0 +1,18 @@
+enum SubscriptionPlanType {
+    STARTER
+    GROWTH
+    ENTERPRISE
+}
+
+enum BillingCycle {
+    MONTHLY
+    ANNUALLY
+}
+
+enum SubscriptionStatus {
+    TRIAL
+    ACTIVE
+    EXPIRED
+    CANCELLED
+    SUSPENDED
+}

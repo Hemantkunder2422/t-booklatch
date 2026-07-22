@@ -1,0 +1,7 @@
+model WebsiteLead {
+    id      String  @id @default(uuid())
+    name    String
+    email   String  @unique
+    phone   String
+    message String?
+}

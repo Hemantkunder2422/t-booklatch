@@ -23,6 +23,8 @@ import { PackagesModule } from './modules/packages/packages.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
 import { MailModule } from './modules/mail/mail.module';
 import { StorageModule } from './modules/storage/storage.module';
+import { SubscriptionModule } from './modules/subscription/subscription.module';
+import { TenantModule } from './modules/tenant/tenant.module';
 
 @Module({
   imports: [
@@ -54,6 +56,8 @@ import { StorageModule } from './modules/storage/storage.module';
     InvoiceModule,
     MailModule,
     StorageModule,
+    SubscriptionModule,
+    TenantModule,
   ],
   controllers: [AppController],
   providers: [

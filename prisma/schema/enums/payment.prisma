@@ -1,0 +1,21 @@
+enum PaymentStatus {
+    PENDING
+    PARTIAL
+    PAID
+    REFUNDED
+}
+
+enum PaymentType {
+    CASH
+    CARD
+    UPI
+    NET_BANKING
+}
+
+enum InvoiceLineItemCategory {
+    VENUE_RENT
+    CATERING
+    DECORATION
+    PARKING
+    OTHERS
+}

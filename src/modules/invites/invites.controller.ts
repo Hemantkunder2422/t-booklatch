@@ -34,14 +34,14 @@ export class InvitesController {
   }
 
   @Post('user')
-  @Roles(Role.VENUE_ADMIN, Role.VENDOR_ADMIN)
-  async inviteUser(@Body() dto: UserInviteDto , @CurrentUser() user:AuthUser) {
-    return this.invite.userInvite(dto,user);
+  @Roles(Role.MANAGER, Role.OWNER)
+  async inviteUser(@Body() dto: UserInviteDto, @CurrentUser() user: AuthUser) {
+    return this.invite.userInvite(dto, user);
   }
 
   @Post('accept')
+  @Roles(Role.MANAGER, Role.OWNER, Role.STAFF, Role.SUPER_ADMIN)
   async acceptInvite(@Body() dto: AcceptInviteDto) {
     return this.invite.acceptInvite(dto);
   }
 }
- 

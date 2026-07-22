@@ -1,4 +1,4 @@
-import { Role, UserType } from '@prisma/client';
+import { Role, TenantType, UserType } from '@prisma/client';
 import { IsEmail, IsEnum, IsOptional } from 'class-validator';
 
 export class InviteDto {
@@ -8,6 +8,10 @@ export class InviteDto {
   @IsOptional()
   @IsEnum(Role)
   role!: Role;
+
+  @IsOptional()
+  @IsEnum(TenantType)
+  tenantType!: TenantType;
 
   @IsOptional()
   @IsEnum(UserType)

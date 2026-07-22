@@ -1,0 +1,74 @@
+model Venue {
+    id                  String              @id @default(uuid())
+    name                String
+    description         String?
+    address             String?
+    city                String?
+    state               String?
+    country             String?
+    pincode             String?
+    phone               String?
+    email               String?
+    website             String?
+    capacity            Int?
+    priceRange          String?
+    openingTime         String?
+    closingTime         String?
+    createdById         String
+    isActive            Boolean             @default(true)
+    isVerified          Boolean             @default(false)
+    metadata            Json?
+    createdAt           DateTime            @default(now())
+    updatedAt           DateTime            @updatedAt
+    tenantId            String
+    venueSpaces         VenueSpaces[]
+    bookings            Booking[]
+    bookingEnquiries    BookingEnquiry[]
+    tenant              Tenant              @relation(fields: [tenantId], references: [id])
+    latitude            Decimal?            @db.Decimal(9, 6)
+    longitude           Decimal?            @db.Decimal(9, 6)
+    venueImageGalleries VenueImageGallery[]
+    userVenues          UserVenue[]
+
+    @@index([city])
+    @@index([name])
+    @@index([createdById])
+    @@index([latitude, longitude])
+}
+
+model VenueImageGallery {
+    id           String       @id @default(uuid())
+    venueId      String
+    venueSpaceId String?
+    imageKey     String
+    displayOrder Int          @default(0)
+    venue        Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+    venueSpace   VenueSpaces? @relation(fields: [venueSpaceId], references: [id], onDelete: Cascade)
+    isPrimary    Boolean      @default(false)
+    createdAt    DateTime     @default(now())
+    updatedAt    DateTime     @updatedAt
+
+    @@unique([venueId, venueSpaceId, displayOrder])
+    @@index([venueId])
+    @@index([venueSpaceId])
+}
+
+model VenueSpaces {
+    id                  String               @id @default(uuid())
+    venueId             String
+    name                String
+    description         String
+    morningSlotEnabled  Boolean              @default(true)
+    eveningSlotEnabled  Boolean              @default(true)
+    fullDaySlotEnabled  Boolean              @default(true)
+    pax                 Int
+    venue               Venue                @relation(fields: [venueId], references: [id])
+    calendarEntries     VenueSpaceCalendar[]
+    bookingEnquiry      BookingEnquiry[]
+    bookings            Booking[]
+    createdAt           DateTime             @default(now())
+    updatedAt           DateTime             @updatedAt
+    venueImageGalleries VenueImageGallery[]
+
+    @@index([venueId, name])
+}

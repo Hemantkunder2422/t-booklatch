@@ -1,4 +1,11 @@
-import { Body, Controller, Delete, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { VenueService } from './venue.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -15,20 +22,23 @@ export class VenueController {
   constructor(private venueService: VenueService) {}
 
   @Post('add-venue')
-  @Roles(Role.VENUE_ADMIN)
+  @Roles(Role.MANAGER, Role.OWNER)
   async register(@Body() dto: CreateVenueDto, @CurrentUser() user: AuthUser) {
     return this.venueService.createVenue(dto, user);
   }
 
   @Post('add-space')
-  @Roles(Role.VENUE_ADMIN,Role.VENUE_STAFF)
-  async addSpace(@Body() dto:AddVenueSpace, @CurrentUser() user:AuthUser){
-    return this.venueService.addVenueSpace(dto,user)
+  @Roles(Role.MANAGER, Role.OWNER)
+  async addSpace(@Body() dto: AddVenueSpace, @CurrentUser() user: AuthUser) {
+    return this.venueService.addVenueSpace(dto, user);
   }
 
   @Delete('remove-space/:spaceId')
-  @Roles(Role.VENUE_ADMIN)
-  async removeSpace(@Param("spaceId") spaceId:string, @CurrentUser() user:AuthUser){
-    return this.venueService.removeSpace(spaceId,user)
+  @Roles(Role.OWNER, Role.MANAGER)
+  async removeSpace(
+    @Param('spaceId') spaceId: string,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.venueService.removeSpace(spaceId, user);
   }
 }

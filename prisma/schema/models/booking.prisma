@@ -1,0 +1,55 @@
+model Booking {
+    id              String               @id @default(uuid())
+    venueId         String
+    venueSpaceId    String
+    customerName    String
+    customerPhone   String
+    customerEmail   String
+    eventName       String
+    eventType       EventType
+    bookingDate     DateTime             @db.Date
+    startTime       DateTime
+    endTime         DateTime
+    bookingStatus   BookingStatus        @default(PENDING)
+    source          BookingSource        @default(INTERNAL)
+    pax             Int
+    notes           String?
+    createdById     String?
+    createdAt       DateTime             @default(now())
+    updatedAt       DateTime             @updatedAt
+    venue           Venue                @relation(fields: [venueId], references: [id])
+    venueSpace      VenueSpaces          @relation(fields: [venueSpaceId], references: [id])
+    createdBy       User?                @relation("BookingCreatedBy", fields: [createdById], references: [id])
+    calendarEntries VenueSpaceCalendar[]
+    payments        Payment[]
+    invoice         Invoice?
+    receipts        Receipt[]
+
+    @@index([venueSpaceId, bookingDate])
+    @@index([createdById])
+}
+
+model BookingEnquiry {
+    id            String        @id @default(uuid())
+    venueId       String
+    venueSpaceId  String
+    customerName  String
+    customerPhone String
+    customerEmail String?
+    eventName     String?
+    eventType     EventType?
+    bookingDate   DateTime      @db.Date
+    slot          BookingSlot
+    status        EnquiryStatus @default(NEW)
+    source        BookingSource @default(INTERNAL)
+    pax           Int?
+    notes         String?
+    createdAt     DateTime      @default(now())
+    updatedAt     DateTime      @updatedAt
+    venue         Venue         @relation(fields: [venueId], references: [id])
+    venueSpace    VenueSpaces   @relation(fields: [venueSpaceId], references: [id])
+
+    @@index([venueId])
+    @@index([bookingDate])
+    @@index([status])
+}

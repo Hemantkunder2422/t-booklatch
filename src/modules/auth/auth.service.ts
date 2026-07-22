@@ -8,11 +8,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, randomBytes } from 'crypto';
-import type { User } from '@prisma/client';
+import { TenantType, type User } from '@prisma/client';
 import type { AuthUser } from 'src/types/auth-user.interface';
 import { MailService } from '../mail/mail.service';
+import { ConfigService } from '@nestjs/config';
 
-const ACCESS_TOKEN_TTL = '45m';
 const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 @Injectable()
@@ -21,21 +21,22 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private jwtService: JwtService,
     private readonly mailServices: MailService,
+    private configService: ConfigService,
   ) {}
 
   private buildPayload(user: User) {
     return {
       sub: user.id,
       role: user.role,
-      venueId: user.venueId,
       vendorId: user.vendorId,
       type: user.userType,
+      tenantId: user.tenantId,
     };
   }
 
   private issueAccessToken(user: User) {
     return this.jwtService.sign(this.buildPayload(user), {
-      expiresIn: ACCESS_TOKEN_TTL,
+      expiresIn: this.configService.getOrThrow('ACCESS_TOKEN_EXPIRY'),
     });
   }
 
@@ -95,8 +96,7 @@ export class AuthService {
         email: user.email,
         role: user.role,
         type: user.userType,
-        venueId: user.venueId,
-        vendorId: user.vendorId,
+        tenantId: user.tenantId,
       },
     };
   }
@@ -161,8 +161,7 @@ export class AuthService {
         email: true,
         role: true,
         userType: true,
-        vendorId: true,
-        venueId: true,
+        tenant: true,
       },
     });
 
@@ -179,8 +178,7 @@ export class AuthService {
         email: true,
         role: true,
         userType: true,
-        vendorId: true,
-        venueId: true,
+        tenant: true,
         isActive: true,
         isVerified: true,
         createdAt: true,

@@ -1,0 +1,10 @@
+model Tenant {
+    id            String         @id @default(uuid())
+    name          String?
+    type          TenantType
+    subscriptions Subscription[]
+    user          User[]
+    venue         Venue[]
+    vendor        Vendor[]
+    invites       Invite[]
+}

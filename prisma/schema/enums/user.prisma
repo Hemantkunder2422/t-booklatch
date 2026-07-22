@@ -1,0 +1,28 @@
+enum Role {
+    //Booklatch
+    SUPER_ADMIN
+    PLATFORM_ADMIN
+    SUPPORT
+
+    //Tenant(Venue,Vendor)
+    OWNER
+    MANAGER
+    STAFF
+}
+
+enum UserType {
+    ADMIN
+    TENANT
+}
+
+enum InviteType {
+    TENANT_OWNER
+    TENANT_USER
+}
+
+enum InviteStatus {
+    PENDING
+    ACCEPTED
+    EXPIRED
+    CANCELLED
+}
