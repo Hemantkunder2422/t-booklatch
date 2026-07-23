@@ -1,3 +1,7 @@
+// DB-level double-booking guard: a Postgres EXCLUDE USING gist constraint
+// ("booking_no_overlap") rejects overlapping live bookings for the same
+// venueSpaceId + bookingDate. Prisma can't express EXCLUDE, so it lives in the
+// booking_no_overlap_guard migration — do not expect migrate to manage it.
 model Booking {
     id              String               @id @default(uuid())
     venueId         String
@@ -39,7 +43,8 @@ model BookingEnquiry {
     eventName     String?
     eventType     EventType?
     bookingDate   DateTime      @db.Date
-    slot          BookingSlot
+    startTime     DateTime
+    endTime       DateTime
     status        EnquiryStatus @default(NEW)
     source        BookingSource @default(INTERNAL)
     pax           Int?

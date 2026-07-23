@@ -2,7 +2,8 @@ model VenueSpaceCalendar {
     id           String         @id @default(uuid())
     venueSpaceId String
     date         DateTime       @db.Date
-    slot         BookingSlot
+    startTime    DateTime
+    endTime      DateTime
     status       CalendarStatus
     notes        String?
     bookingId    String?

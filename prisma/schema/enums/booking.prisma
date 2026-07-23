@@ -1,9 +1,3 @@
-enum BookingSlot {
-    MORNING
-    EVENING
-    FULL_DAY
-}
-
 enum BookingSource {
     INTERNAL
     PHONE

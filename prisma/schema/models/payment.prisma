@@ -9,7 +9,7 @@ model Payment {
     gatewayOrderId   String?
     gatewayPaymentId String?
     gatewaySignature String?
-    paidAt           DateTime
+    paidAt           DateTime?
     failureReason    String?
     metadata         Json?
     createdAt        DateTime      @default(now())

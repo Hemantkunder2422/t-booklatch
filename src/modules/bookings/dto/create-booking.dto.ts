@@ -1,4 +1,4 @@
-import { EventType, BookingSlot } from '@prisma/client';
+import { EventType, PaymentType } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsDate,
@@ -7,6 +7,7 @@ import {
   IsEnum,
   IsNumber,
   IsPhoneNumber,
+  IsPositive,
   IsString,
 } from 'class-validator';
 
@@ -48,4 +49,12 @@ export class CreateBookingDto {
 
   @IsString()
   notes!: string;
+
+  // Amount to collect for this booking (mock payment for now).
+  @IsNumber()
+  @IsPositive()
+  amount!: number;
+
+  @IsEnum(PaymentType)
+  paymentMethod!: PaymentType;
 }
