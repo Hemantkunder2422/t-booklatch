@@ -1,26 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class CustomerService {
+  constructor(private prisma: PrismaService) {}
+
   create(createCustomerDto: CreateCustomerDto) {
     return 'This action adds a new customer';
   }
 
   findAll() {
-    return `This action returns all customer`;
+    return this.prisma.customer.findMany({
+      where: { deletedAt: null },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} customer`;
+  async findOne(id: string) {
+    const customer = await this.prisma.customer.findFirst({
+      where: { id, deletedAt: null },
+    });
+    if (!customer) throw new NotFoundException('Customer not found');
+    return customer;
   }
 
-  update(id: number, updateCustomerDto: UpdateCustomerDto) {
+  update(id: string, updateCustomerDto: UpdateCustomerDto) {
     return `This action updates a #${id} customer`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} customer`;
+  async remove(id: string) {
+    const customer = await this.prisma.customer.findUnique({ where: { id } });
+    if (!customer || customer.deletedAt) throw new NotFoundException('Customer not found');
+
+    await this.prisma.customer.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+
+    return `Customer #${id} removed`;
   }
 }
