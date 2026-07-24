@@ -1,27 +1,27 @@
 model Vendor {
-    id          String     @id @default(uuid())
-    name        String
-    description String?
-    type        VendorType
-    phone       String?
-    email       String?
-    website     String?
-    city        String?
-    state       String?
-    country     String?
-    createdById String
-    tenantId    String
-    isActive    Boolean    @default(true)
-    isVerified  Boolean    @default(false)
-    metaData    Json?
-    createdAt   DateTime   @default(now())
-    updatedAt   DateTime   @updatedAt
-    lat         Float?
-    long        Float?
-    createdBy   User       @relation("VendorCreatedBy", fields: [createdById], references: [id])
-    users       User[]
-    tenant      Tenant     @relation(fields: [tenantId], references: [id])
+  id          String     @id @default(uuid())
+  name        String
+  description String?
+  type        VendorType
+  phone       String?
+  email       String?
+  website     String?
+  city        String?
+  state       String?
+  country     String?
+  createdById String
+  tenantId    String
+  isActive    Boolean    @default(true)
+  isVerified  Boolean    @default(false)
+  metaData    Json?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  lat         Float?
+  long        Float?
+  createdBy   User       @relation("VendorCreatedBy", fields: [createdById], references: [id])
+  users       User[]
+  tenant      Tenant     @relation(fields: [tenantId], references: [id])
 
-    @@index([type])
-    @@index([city])
+  @@index([type])
+  @@index([city])
 }

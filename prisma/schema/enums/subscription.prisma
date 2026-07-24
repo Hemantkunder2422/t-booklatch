@@ -1,18 +1,18 @@
 enum SubscriptionPlanType {
-    STARTER
-    GROWTH
-    ENTERPRISE
+  STARTER
+  GROWTH
+  ENTERPRISE
 }
 
 enum BillingCycle {
-    MONTHLY
-    ANNUALLY
+  MONTHLY
+  ANNUALLY
 }
 
 enum SubscriptionStatus {
-    TRIAL
-    ACTIVE
-    EXPIRED
-    CANCELLED
-    SUSPENDED
+  TRIAL
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  SUSPENDED
 }

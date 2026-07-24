@@ -45,10 +45,34 @@ export class BookingsService {
       );
     }
 
+    // Ensure customer is created or linked based on email/phone if they provide it.
+    // Given the new Customer model with soft delete, we'll try to find an existing active customer
+    // or create a new one. Since we don't have customerId in DTO yet, we'll match by email/phone or just create.
+    let customer = await this.prisma.customer.findFirst({
+      where: {
+        OR: [
+          { email: dto.customerEmail },
+          { phone: dto.customerPhone }
+        ],
+        deletedAt: null // Only active customers
+      }
+    });
+
+    if (!customer) {
+      customer = await this.prisma.customer.create({
+        data: {
+          name: dto.customerName,
+          email: dto.customerEmail,
+          phone: dto.customerPhone,
+        }
+      });
+    }
+
     await this.prisma.booking.create({
       data: {
         venueId: dto.venueId,
         venueSpaceId: dto.venueSpaceId,
+        customerId: customer.id,
         customerName: dto.customerName,
         customerEmail: dto.customerEmail,
         customerPhone: dto.customerPhone,

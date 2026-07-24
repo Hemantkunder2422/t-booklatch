@@ -1,23 +1,23 @@
 model Payment {
-    id               String        @id @default(uuid())
-    bookingId        String
-    amount           Decimal       @db.Decimal(10, 2)
-    currency         String        @default("INR")
-    paymentMethod    PaymentType
-    paymentStatus    PaymentStatus @default(PENDING)
-    transactionID    String?
-    gatewayOrderId   String?
-    gatewayPaymentId String?
-    gatewaySignature String?
-    paidAt           DateTime
-    failureReason    String?
-    metadata         Json?
-    createdAt        DateTime      @default(now())
-    updatedAt        DateTime      @updatedAt
-    booking          Booking       @relation(fields: [bookingId], references: [id])
-    invoice          Invoice?
-    receipts         Receipt[]
+  id               String        @id @default(uuid())
+  bookingId        String
+  amount           Decimal       @db.Decimal(10, 2)
+  currency         String        @default("INR")
+  paymentMethod    PaymentType
+  paymentStatus    PaymentStatus @default(PENDING)
+  transactionID    String?
+  gatewayOrderId   String?
+  gatewayPaymentId String?
+  gatewaySignature String?
+  paidAt           DateTime
+  failureReason    String?
+  metadata         Json?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  booking          Booking       @relation(fields: [bookingId], references: [id])
+  invoice          Invoice?
+  receipts         Receipt[]
 
-    @@index([bookingId])
-    @@index([paymentStatus])
+  @@index([bookingId])
+  @@index([paymentStatus])
 }

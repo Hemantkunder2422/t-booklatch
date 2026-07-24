@@ -1,36 +1,36 @@
 model SubscriptionPlan {
-    id String @id @default(uuid())
+  id String @id @default(uuid())
 
-    name String
-    code SubscriptionPlanType @unique
+  name String
+  code SubscriptionPlanType @unique
 
-    description String?
+  description String?
 
-    monthlyPrice  Decimal        @db.Decimal(10, 2)
-    yearlyPrice   Decimal?       @db.Decimal(10, 2)
-    maxVenue      Int            @default(1)
-    maxUser       Int            @default(2)
-    maxSpace      Int            @default(1)
-    trialDays     Int            @default(14)
-    isActive      Boolean        @default(true)
-    createdAt     DateTime       @default(now())
-    updatedAt     DateTime       @updatedAt
-    subscriptions Subscription[]
+  monthlyPrice  Decimal        @db.Decimal(10, 2)
+  yearlyPrice   Decimal?       @db.Decimal(10, 2)
+  maxVenue      Int            @default(1)
+  maxUser       Int            @default(2)
+  maxSpace      Int            @default(1)
+  trialDays     Int            @default(14)
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
 }
 
 model Subscription {
-    id                 String             @id @default(uuid())
-    tenantId           String             @unique
-    tenant             Tenant             @relation(fields: [tenantId], references: [id])
-    planId             String
-    plan               SubscriptionPlan   @relation(fields: [planId], references: [id])
-    status             SubscriptionStatus @default(TRIAL)
-    billingCycle       BillingCycle       @default(MONTHLY)
-    startedAt          DateTime           @default(now())
-    trialEndsAt        DateTime?
-    currentPeriodStart DateTime?
-    currentPeriodEnd   DateTime?
-    cancelledAt        DateTime?
-    createdAt          DateTime           @default(now())
-    updatedAt          DateTime           @updatedAt
+  id                 String             @id @default(uuid())
+  tenantId           String             @unique
+  tenant             Tenant             @relation(fields: [tenantId], references: [id])
+  planId             String
+  plan               SubscriptionPlan   @relation(fields: [planId], references: [id])
+  status             SubscriptionStatus @default(TRIAL)
+  billingCycle       BillingCycle       @default(MONTHLY)
+  startedAt          DateTime           @default(now())
+  trialEndsAt        DateTime?
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  cancelledAt        DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
 }

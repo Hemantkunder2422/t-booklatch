@@ -1,6 +1,6 @@
 enum VendorType {
-    FOOD
-    DECOR
-    PHOTOGRAPHY
-    MUSIC
+  FOOD
+  DECOR
+  PHOTOGRAPHY
+  MUSIC
 }
